@@ -11,6 +11,7 @@
 #include <variant>
 #include <vector>
 
+#include "account.h"
 #include "error.h"
 #include "exchange_info.h"
 
@@ -85,6 +86,17 @@ void print_decimal(const char* const key,
         exit(1);
     }
     print_str(key, buffer.data(), pos);
+}
+
+void print_json(const char* const key,
+                const CommissionRates& val,
+                const FieldPos pos = FieldPos::Default) {
+    printf("\"%s\":{", key);
+    print_decimal("maker", val.commission_rate_maker);
+    print_decimal("taker", val.commission_rate_taker);
+    print_decimal("buyer", val.commission_rate_buyer);
+    print_decimal("seller", val.commission_rate_seller, FieldPos::Last);
+    printf("}%s", pos == FieldPos::Default ? "," : "");
 }
 
 void print_json(const RateLimit& val) {
@@ -293,6 +305,35 @@ void print_json(const Sor& sor) {
     printf("{");
     print_str("baseAsset", sor.base_asset.c_str());
     print_str_vec("symbols", sor.symbols, FieldPos::Last);
+    printf("}");
+}
+
+void print_json(const Balances& balance) {
+    printf("{");
+    print_str("asset", balance.asset.c_str());
+    print_decimal("free", balance.free);
+    print_decimal("locked", balance.locked, FieldPos::Last);
+    printf("}");
+}
+
+void print_json(const Account& account) {
+    printf("{");
+    print_json("commissionRates", account.commission_rates);
+    print_bool("canTrade", account.can_trade);
+    print_bool("canWithdraw", account.can_withdraw);
+    print_bool("canDeposit", account.can_deposit);
+    print_bool("brokered", account.brokered);
+    print_bool("requireSelfTradePrevention", account.require_self_trade_prevention);
+    print_bool("preventSor", account.prevent_sor);
+    print_long("updateTime", account.update_time);
+    print_str("accountType", AccountType::c_str(account.account_type));
+    if (account.trade_group_id) {
+        print_int("tradeGroupId", *account.trade_group_id);
+    }
+    print_json_vec("balances", account.balances);
+    print_str_vec("permissions", account.permissions);
+    print_str_vec("reduceOnlyAssets", account.reduce_only_assets);
+    print_long("uid", account.uid, FieldPos::Last);
     printf("}");
 }
 

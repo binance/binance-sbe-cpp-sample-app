@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "decimal.h"
 #include "spot_sbe/ExchangeMaxNumAlgoOrdersFilter.h"
 #include "spot_sbe/ExchangeMaxNumIcebergOrdersFilter.h"
 #include "spot_sbe/ExchangeMaxNumOrdersFilter.h"
@@ -59,11 +60,6 @@ using spot_sbe::SelfTradePreventionMode;
 using spot_sbe::SymbolStatus;
 using spot_sbe::TPlusSellFilter;
 using spot_sbe::TrailingDeltaFilter;
-
-struct Decimal {
-    int64_t mantissa;
-    int8_t exponent;
-};
 
 struct RateLimit {
     RateLimitType::Value rate_limit_type;
