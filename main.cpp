@@ -5,14 +5,17 @@
 #include <string>
 #include <vector>
 
+#include "account.h"
 #include "error.h"
 #include "exchange_info.h"
 #include "json.h"
+#include "spot_sbe/AccountResponse.h"
 #include "spot_sbe/BoolEnum.h"
 #include "spot_sbe/ErrorResponse.h"
 #include "spot_sbe/ExchangeInfoResponse.h"
 #include "spot_sbe/MessageHeader.h"
 
+using spot_sbe::AccountResponse;
 using spot_sbe::BoolEnum;
 using spot_sbe::ErrorResponse;
 using spot_sbe::ExchangeInfoResponse;
@@ -54,35 +57,62 @@ bool as_bool(const BoolEnum::Value bool_enum) {
     return false;
 }
 
-int main() {
-    auto payload = read_payload(STDIN_FILENO);
-    const MessageHeader message_header(payload.data(), payload.size());
+void decode_account(std::vector<char>&& payload, const MessageHeader& message_header) {
+    auto account =
+        message_from_header<AccountResponse>(payload.data(), payload.size(), message_header);
 
-    const auto template_id = message_header.templateId();
-    if (template_id == ErrorResponse::sbeTemplateId()) {
-        // A separate "ErrorResponse" message is returned for errors and its
-        // format is expected to be backwards compatible across all schema IDs.
-        auto decoder =
-            message_from_header<ErrorResponse>(payload.data(), payload.size(), message_header);
-        Error error(decoder);
-        print_json(error);
-        return 1;
-    }
-    const auto schema_id = message_header.schemaId();
-    if (schema_id != ExchangeInfoResponse::sbeSchemaId()) {
-        fprintf(stderr, "Unexpected schema ID %d\n", schema_id);
-        return 1;
-    }
-    const auto version = message_header.version();
-    if (version != ExchangeInfoResponse::sbeSchemaVersion()) {
-        fprintf(stderr, "Warning: Unexpected version %d\n", version);
-        // Schemas with the same ID are expected to be backwards compatible.
-    }
-    if (template_id != ExchangeInfoResponse::sbeTemplateId()) {
-        fprintf(stderr, "Unexpected template ID %d\n", template_id);
-        return 1;
+    Account result;
+    const auto commission_exponent = account.commissionExponent();
+    const auto commission_rate_maker = account.commissionRateMaker();
+    const auto commission_rate_taker = account.commissionRateTaker();
+    const auto commission_rate_buyer = account.commissionRateBuyer();
+    const auto commission_rate_seller = account.commissionRateSeller();
+
+    result.commission_rates =
+        CommissionRates{commission_rate_maker, commission_rate_taker, commission_rate_buyer,
+                        commission_rate_seller, commission_exponent};
+
+    result.can_trade = as_bool(account.canTrade());
+    result.can_withdraw = as_bool(account.canWithdraw());
+    result.can_deposit = as_bool(account.canDeposit());
+    result.brokered = as_bool(account.brokered());
+    result.require_self_trade_prevention = as_bool(account.requireSelfTradePrevention());
+    result.prevent_sor = as_bool(account.preventSor());
+    result.update_time = account.updateTime() / 1000;
+    result.account_type = account.accountType();
+
+    const auto trade_group_id = account.tradeGroupId();
+    if (trade_group_id != AccountResponse::tradeGroupIdNullValue()) {
+        result.trade_group_id = trade_group_id;
     }
 
+    result.uid = account.uid();
+
+    auto& balances = account.balances();
+    result.balances.reserve(balances.count());
+    balances.forEach([&](auto& balance) {
+        const auto balances_exponent = balance.exponent();
+        const auto free = balance.free();
+        const auto locked = balance.locked();
+        auto asset = balance.getAssetAsString();
+        result.balances.push_back(Balances{free, locked, asset, balances_exponent});
+    });
+
+    auto& permissions = account.permissions();
+    result.permissions.reserve(permissions.count());
+    permissions.forEach([&](auto& permission) {
+        result.permissions.push_back(permission.getPermissionAsString());
+    });
+
+    auto& reduce_only_assets = account.reduceOnlyAssets();
+    result.reduce_only_assets.reserve(reduce_only_assets.count());
+    reduce_only_assets.forEach([&](auto& reduce_only_asset) {
+        result.reduce_only_assets.push_back(reduce_only_asset.getAssetAsString());
+    });
+    print_json(result);
+}
+
+void decode_exchange_info(std::vector<char>&& payload, const MessageHeader& message_header) {
     auto exchange_info =
         message_from_header<ExchangeInfoResponse>(payload.data(), payload.size(), message_header);
 
@@ -185,5 +215,41 @@ int main() {
         result.sors.push_back(std::move(sor));
     });
     print_json(result);
+}
+
+int main() {
+    auto payload = read_payload(STDIN_FILENO);
+    const MessageHeader message_header(payload.data(), payload.size());
+
+    const auto template_id = message_header.templateId();
+    if (template_id == ErrorResponse::sbeTemplateId()) {
+        // A separate "ErrorResponse" message is returned for errors and its
+        // format is expected to be backwards compatible across all schema IDs.
+        auto decoder =
+            message_from_header<ErrorResponse>(payload.data(), payload.size(), message_header);
+        Error error(decoder);
+        print_json(error);
+        return 1;
+    }
+
+    const auto schema_id = message_header.schemaId();
+    if (schema_id != ExchangeInfoResponse::sbeSchemaId()) {
+        fprintf(stderr, "Unexpected schema ID %d\n", schema_id);
+        return 1;
+    }
+    const auto version = message_header.version();
+    if (version != ExchangeInfoResponse::sbeSchemaVersion()) {
+        fprintf(stderr, "Warning: Unexpected version %d\n", version);
+        // Schemas with the same ID are expected to be backwards compatible.
+    }
+    if (template_id == AccountResponse::sbeTemplateId()) {
+        decode_account(std::move(payload), message_header);
+    } else if (template_id == ExchangeInfoResponse::sbeTemplateId()) {
+        decode_exchange_info(std::move(payload), message_header);
+    } else {
+        fprintf(stderr, "Unexpected template ID %d\n", template_id);
+        return 1;
+    }
+
     return 0;
 }
