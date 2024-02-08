@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "decimal.h"
+#include "self_trade_prevention_modes.h"
 #include "spot_sbe/ExchangeMaxNumAlgoOrdersFilter.h"
 #include "spot_sbe/ExchangeMaxNumIcebergOrdersFilter.h"
 #include "spot_sbe/ExchangeMaxNumOrdersFilter.h"
@@ -94,25 +95,20 @@ struct ExchangeFilter {
     ExchangeFilterData data;
 };
 
-ExchangeFilter make_exchange_filter(const MessageHeader& header,
-                                    char* const filter_data,
-                                    const size_t filter_size) {
+ExchangeFilter make_exchange_filter(const MessageHeader& header, const std::span<char>& filter) {
     switch (header.templateId()) {
         case ExchangeMaxNumOrdersFilter::sbeTemplateId(): {
-            const auto msg =
-                message_from_header<ExchangeMaxNumOrdersFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<ExchangeMaxNumOrdersFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return ExchangeFilter{filter_type, ExchangeMaxNumOrders{msg.maxNumOrders()}};
         }
         case ExchangeMaxNumAlgoOrdersFilter::sbeTemplateId(): {
-            const auto msg = message_from_header<ExchangeMaxNumAlgoOrdersFilter>(
-                filter_data, filter_size, header);
+            const auto msg = message_from_header<ExchangeMaxNumAlgoOrdersFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return ExchangeFilter{filter_type, ExchangeMaxNumAlgoOrders{msg.maxNumAlgoOrders()}};
         }
         case ExchangeMaxNumIcebergOrdersFilter::sbeTemplateId(): {
-            const auto msg = message_from_header<ExchangeMaxNumIcebergOrdersFilter>(
-                filter_data, filter_size, header);
+            const auto msg = message_from_header<ExchangeMaxNumIcebergOrdersFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return ExchangeFilter{filter_type,
                                   ExchangeMaxNumIcebergOrders{msg.maxNumIcebergOrders()}};
@@ -314,89 +310,77 @@ struct SymbolFilter {
     SymbolFilterData data;
 };
 
-SymbolFilter make_symbol_filter(const MessageHeader& header,
-                                char* const filter_data,
-                                const size_t filter_size) {
+SymbolFilter make_symbol_filter(const MessageHeader& header, const std::span<char> filter) {
     switch (header.templateId()) {
         case PriceFilter::sbeTemplateId(): {
-            const auto msg = message_from_header<PriceFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<PriceFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type, SymbolPriceFilter{msg, msg.priceExponent()}};
         }
         case PercentPriceFilter::sbeTemplateId(): {
-            const auto msg =
-                message_from_header<PercentPriceFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<PercentPriceFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type,
                                 SymbolPercentPriceFilter{msg, msg.multiplierExponent()}};
         }
         case PercentPriceBySideFilter::sbeTemplateId(): {
-            const auto msg =
-                message_from_header<PercentPriceBySideFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<PercentPriceBySideFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type,
                                 SymbolPercentPriceBySideFilter{msg, msg.multiplierExponent()}};
         }
         case LotSizeFilter::sbeTemplateId(): {
-            const auto msg = message_from_header<LotSizeFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<LotSizeFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type, SymbolLotSizeFilter{msg, msg.qtyExponent()}};
         }
         case MinNotionalFilter::sbeTemplateId(): {
-            const auto msg =
-                message_from_header<MinNotionalFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<MinNotionalFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type, SymbolMinNotionalFilter{msg, msg.priceExponent()}};
         }
         case NotionalFilter::sbeTemplateId(): {
-            const auto msg = message_from_header<NotionalFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<NotionalFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type, SymbolNotionalFilter{msg, msg.priceExponent()}};
         }
         case IcebergPartsFilter::sbeTemplateId(): {
-            const auto msg =
-                message_from_header<IcebergPartsFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<IcebergPartsFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type, SymbolIcebergPartsFilter{msg}};
         }
         case MarketLotSizeFilter::sbeTemplateId(): {
-            const auto msg =
-                message_from_header<MarketLotSizeFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<MarketLotSizeFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type, SymbolMarketLotSizeFilter{msg, msg.qtyExponent()}};
         }
         case MaxNumOrdersFilter::sbeTemplateId(): {
-            const auto msg =
-                message_from_header<MaxNumOrdersFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<MaxNumOrdersFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type, SymbolMaxNumOrdersFilter{msg}};
         }
         case MaxNumAlgoOrdersFilter::sbeTemplateId(): {
-            const auto msg =
-                message_from_header<MaxNumAlgoOrdersFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<MaxNumAlgoOrdersFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type, SymbolMaxNumAlgoOrdersFilter{msg}};
         }
         case MaxNumIcebergOrdersFilter::sbeTemplateId(): {
-            const auto msg =
-                message_from_header<MaxNumIcebergOrdersFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<MaxNumIcebergOrdersFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type, MaxNumIcebergOrdersFilter{msg}};
         }
         case MaxPositionFilter::sbeTemplateId(): {
-            const auto msg =
-                message_from_header<MaxPositionFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<MaxPositionFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type, SymbolMaxPositionFilter{msg, msg.qtyExponent()}};
         }
         case TrailingDeltaFilter::sbeTemplateId(): {
-            const auto msg =
-                message_from_header<TrailingDeltaFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<TrailingDeltaFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type, SymbolTrailingDeltaFilter{msg}};
         }
         case TPlusSellFilter::sbeTemplateId(): {
-            const auto msg = message_from_header<TPlusSellFilter>(filter_data, filter_size, header);
+            const auto msg = message_from_header<TPlusSellFilter>(filter, header);
             const auto filter_type = msg.filterType();
             return SymbolFilter{filter_type, SymbolTPlusSellFilter{msg}};
         }
@@ -445,35 +429,6 @@ struct OrderTypes {
     }
 
     bool contains(const OrderTypes::Flags flag) const { return value & flag; }
-};
-
-struct SelfTradePreventionModes {
-    uint32_t value;
-
-    enum Flags {
-        None = 1,
-        ExpireTaker = 2,
-        ExpireMaker = 4,
-        ExpireBoth = 8,
-    };
-
-    explicit SelfTradePreventionModes(const spot_sbe::AllowedSelfTradePreventionModes& modes)
-        : value{0} {
-        if (modes.none()) {
-            value |= Flags::None;
-        }
-        if (modes.expireTaker()) {
-            value |= Flags::ExpireTaker;
-        }
-        if (modes.expireMaker()) {
-            value |= Flags::ExpireMaker;
-        }
-        if (modes.expireBoth()) {
-            value |= Flags::ExpireBoth;
-        }
-    }
-
-    bool contains(const SelfTradePreventionModes::Flags flag) const { return value & flag; }
 };
 
 struct SymbolInfo {

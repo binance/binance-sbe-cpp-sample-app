@@ -14,6 +14,8 @@
 #include "account.h"
 #include "error.h"
 #include "exchange_info.h"
+#include "post_order.h"
+#include "web_socket_metadata.h"
 
 enum class FieldPos {
     Default,
@@ -24,6 +26,15 @@ void print_str(const char* const key,
                const char* const value,
                const FieldPos pos = FieldPos::Default) {
     printf("\"%s\":\"%s\"%s", key, value, pos == FieldPos::Default ? "," : "");
+}
+
+template <typename T>
+void print_json_object(const char* key, const T& object, const FieldPos pos = FieldPos::Default) {
+    printf("\"%s\":", key);
+    print_json(object);
+    if (pos != FieldPos::Last) {
+        printf(",");
+    }
 }
 
 const char* bool_str(const bool b) {
@@ -354,6 +365,153 @@ void print_json(const ExchangeInfo& val) {
     printf("],");
     print_json_vec("symbols", val.symbols);
     print_json_vec("sors", val.sors, FieldPos::Last);
+    printf("}");
+}
+
+void print_json(const NewOrder& new_order) {
+    printf("{");
+    print_str("symbol", new_order.symbol.c_str());
+    print_long("orderId", new_order.order_id);
+    if (new_order.order_list_id) {
+        print_long("orderListId", *new_order.order_list_id);
+    } else {
+        print_int("orderListId", -1);
+    }
+    print_str("clientOrderId", new_order.client_order_id.c_str());
+    print_long("transactTime", new_order.transaction_time);
+    print_decimal("price", new_order.price);
+    print_decimal("origQty", new_order.orig_qty);
+    print_decimal("executedQty", new_order.executed_qty);
+    print_decimal("cummulativeQuoteQty", new_order.cummulative_quote_qty);
+    print_str("status", OrderStatus::c_str(new_order.status));
+    print_str("timeInForce", TimeInForce::c_str(new_order.time_in_force));
+    print_str("type", OrderType::c_str(new_order.order_type));
+    print_str("side", OrderSide::c_str(new_order.side));
+    if (new_order.working_time) {
+        print_long("workingTime", *new_order.working_time);
+    }
+    if (new_order.stop_price) {
+        print_decimal("stopPrice", *new_order.stop_price);
+    }
+    if (new_order.trailing_delta) {
+        print_long("trailingDelta", *new_order.trailing_delta);
+    }
+    if (new_order.trailing_time) {
+        print_long("trailingTime", *new_order.trailing_time);
+    }
+    if (new_order.iceberg_qty) {
+        print_long("icebergQty", *new_order.iceberg_qty);
+    }
+    if (new_order.strategy_id) {
+        print_long("strategyId", *new_order.strategy_id);
+    }
+    if (new_order.strategy_type) {
+        print_long("strategyType", *new_order.strategy_type);
+    }
+    if (new_order.order_capacity != OrderCapacity::Value::NULL_VALUE) {
+        print_str("orderCapacity", OrderCapacity::c_str(*new_order.order_capacity));
+    }
+    if (new_order.working_floor != Floor::Value::NULL_VALUE) {
+        print_str("workingFloor", Floor::c_str(*new_order.working_floor));
+    }
+    if (new_order.trade_group_id) {
+        print_long("tradeGroupId", *new_order.trade_group_id);
+    }
+    if (new_order.prevented_quantity) {
+        print_decimal("preventedQuantity", *new_order.prevented_quantity);
+    }
+    if (new_order.used_sor) {
+        print_bool("usedSor", *new_order.used_sor);
+    }
+    print_str("selfTradePreventionMode",
+              SelfTradePreventionMode::c_str(new_order.self_trade_prevention_mode), FieldPos::Last);
+    printf("}");
+}
+
+void print_json(const GetOrder& get_order) {
+    printf("{");
+    print_str("symbol", get_order.symbol.c_str());
+    print_long("orderId", get_order.order_id);
+    if (get_order.order_list_id) {
+        print_long("orderListId", *get_order.order_list_id);
+    } else {
+        print_int("orderListId", -1);
+    }
+    print_str("clientOrderId", get_order.client_order_id.c_str());
+    print_decimal("price", get_order.price);
+    print_decimal("origQty", get_order.orig_qty);
+    print_decimal("executedQty", get_order.executed_qty);
+    print_decimal("cummulativeQuoteQty", get_order.cummulative_quote_qty);
+    print_str("status", OrderStatus::c_str(get_order.status));
+    print_str("timeInForce", TimeInForce::c_str(get_order.time_in_force));
+    print_str("type", OrderType::c_str(get_order.order_type));
+    print_str("side", OrderSide::c_str(get_order.side));
+    if (get_order.stop_price) {
+        print_decimal("stopPrice", *get_order.stop_price);
+    }
+    if (get_order.trailing_delta) {
+        print_long("trailingDelta", *get_order.trailing_delta);
+    }
+    if (get_order.trailing_time) {
+        print_long("trailingTime", *get_order.trailing_time);
+    }
+    if (get_order.iceberg_qty) {
+        print_decimal("icebergQty", *get_order.iceberg_qty);
+    }
+    print_long("time", get_order.time);
+    print_long("updateTime", get_order.update_time);
+    print_bool("isWorking", get_order.is_working);
+    if (get_order.working_time) {
+        print_long("workingTime", *get_order.working_time);
+    }
+    print_decimal("origQuoteOrderQty", get_order.orig_quote_order_qty);
+    if (get_order.strategy_id) {
+        print_long("strategyId", *get_order.strategy_id);
+    }
+    if (get_order.strategy_type) {
+        print_int("strategyType", *get_order.strategy_type);
+    }
+    if (get_order.order_capacity != OrderCapacity::Value::NULL_VALUE) {
+        print_str("orderCapacity", OrderCapacity::c_str(*get_order.order_capacity));
+    }
+    if (get_order.working_floor != Floor::Value::NULL_VALUE) {
+        print_str("workingFloor", Floor::c_str(*get_order.working_floor));
+    }
+    print_str("selfTradePreventionMode",
+              SelfTradePreventionMode::c_str(get_order.self_trade_prevention_mode));
+    if (get_order.prevented_match_id) {
+        print_long("preventedMatchId", *get_order.prevented_match_id);
+    }
+    if (get_order.prevented_quantity) {
+        print_decimal("preventedQuantity", *get_order.prevented_quantity);
+    }
+    if (get_order.used_sor) {
+        print_bool("usedSor", *get_order.used_sor, FieldPos::Last);
+    }
+    printf("}");
+}
+
+void print_json(const WebSocketMetadata::RateLimit& val) {
+    printf("{");
+    print_str("rateLimitType", RateLimitType::c_str(val.rate_limit_type));
+    print_str("interval", RateLimitInterval::c_str(val.interval));
+    print_int("intervalNum", val.interval_num);
+    print_long("limit", val.rate_limit);
+    print_long("count", val.current, FieldPos::Last);
+    printf("}");
+}
+
+template <typename T>
+void print_json(const std::optional<WebSocketMetadata>& websocket_meta, const T& result) {
+    if (!websocket_meta) {
+        print_json(result);
+        return;
+    }
+    printf("{");
+    print_long("status", websocket_meta->status);
+    print_json_vec("rateLimits", websocket_meta->rate_limits);
+    print_str("id", websocket_meta->id.c_str());
+    print_json_object("result", result, FieldPos::Last);
     printf("}");
 }
 

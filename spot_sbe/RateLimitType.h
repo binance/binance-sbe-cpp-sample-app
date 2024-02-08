@@ -31,6 +31,7 @@ public:
     enum Value
     {
         RawRequests = static_cast<std::uint8_t>(0),
+        Connections = static_cast<std::uint8_t>(1),
         RequestWeight = static_cast<std::uint8_t>(2),
         Orders = static_cast<std::uint8_t>(3),
         NULL_VALUE = static_cast<std::uint8_t>(255)
@@ -41,6 +42,7 @@ public:
         switch (value)
         {
             case static_cast<std::uint8_t>(0): return RawRequests;
+            case static_cast<std::uint8_t>(1): return Connections;
             case static_cast<std::uint8_t>(2): return RequestWeight;
             case static_cast<std::uint8_t>(3): return Orders;
             case static_cast<std::uint8_t>(255): return NULL_VALUE;
@@ -54,6 +56,7 @@ public:
         switch (value)
         {
             case RawRequests: return "RawRequests";
+            case Connections: return "Connections";
             case RequestWeight: return "RequestWeight";
             case Orders: return "Orders";
             case NULL_VALUE: return "NULL_VALUE";

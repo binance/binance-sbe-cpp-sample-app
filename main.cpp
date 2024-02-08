@@ -2,24 +2,34 @@
 #include <cstdlib>
 #include <iostream>
 #include <optional>
+#include <span>
 #include <string>
 #include <vector>
 
 #include "account.h"
 #include "error.h"
 #include "exchange_info.h"
+#include "get_order.h"
 #include "json.h"
+#include "post_order.h"
 #include "spot_sbe/AccountResponse.h"
 #include "spot_sbe/BoolEnum.h"
 #include "spot_sbe/ErrorResponse.h"
 #include "spot_sbe/ExchangeInfoResponse.h"
 #include "spot_sbe/MessageHeader.h"
+#include "spot_sbe/NewOrderResultResponse.h"
+#include "spot_sbe/OrderResponse.h"
+#include "spot_sbe/WebSocketResponse.h"
+#include "web_socket_metadata.h"
 
 using spot_sbe::AccountResponse;
 using spot_sbe::BoolEnum;
 using spot_sbe::ErrorResponse;
 using spot_sbe::ExchangeInfoResponse;
 using spot_sbe::MessageHeader;
+using spot_sbe::NewOrderResultResponse;
+using spot_sbe::OrderResponse;
+using spot_sbe::WebSocketResponse;
 
 std::vector<char> read_payload(const int fd) {
     std::vector<char> payload;
@@ -57,9 +67,8 @@ bool as_bool(const BoolEnum::Value bool_enum) {
     return false;
 }
 
-void decode_account(std::vector<char>&& payload, const MessageHeader& message_header) {
-    auto account =
-        message_from_header<AccountResponse>(payload.data(), payload.size(), message_header);
+Account decode_account(const std::span<char> payload, const MessageHeader& message_header) {
+    auto account = message_from_header<AccountResponse>(payload, message_header);
 
     Account result;
     const auto commission_exponent = account.commissionExponent();
@@ -78,7 +87,7 @@ void decode_account(std::vector<char>&& payload, const MessageHeader& message_he
     result.brokered = as_bool(account.brokered());
     result.require_self_trade_prevention = as_bool(account.requireSelfTradePrevention());
     result.prevent_sor = as_bool(account.preventSor());
-    result.update_time = account.updateTime() / 1000;
+    result.update_time = account.updateTime();  // SBE timestamps are in microseconds.
     result.account_type = account.accountType();
 
     const auto trade_group_id = account.tradeGroupId();
@@ -109,12 +118,12 @@ void decode_account(std::vector<char>&& payload, const MessageHeader& message_he
     reduce_only_assets.forEach([&](auto& reduce_only_asset) {
         result.reduce_only_assets.push_back(reduce_only_asset.getAssetAsString());
     });
-    print_json(result);
+    return result;
 }
 
-void decode_exchange_info(std::vector<char>&& payload, const MessageHeader& message_header) {
-    auto exchange_info =
-        message_from_header<ExchangeInfoResponse>(payload.data(), payload.size(), message_header);
+ExchangeInfo decode_exchange_info(const std::span<char> payload,
+                                  const MessageHeader& message_header) {
+    auto exchange_info = message_from_header<ExchangeInfoResponse>(payload, message_header);
 
     ExchangeInfo result;
     auto& rate_limits = exchange_info.rateLimits();
@@ -135,7 +144,7 @@ void decode_exchange_info(std::vector<char>&& payload, const MessageHeader& mess
         char* const filter_data = const_cast<char*>(filter.filter());
         const MessageHeader message_header(filter_data, filter_size);
         result.exchange_filters.emplace_back(
-            make_exchange_filter(message_header, filter_data, filter_size));
+            make_exchange_filter(message_header, std::span{filter_data, filter_size}));
     });
 
     auto& symbols = exchange_info.symbols();
@@ -166,7 +175,7 @@ void decode_exchange_info(std::vector<char>&& payload, const MessageHeader& mess
             char* filter_data = const_cast<char*>(filter.filter());
             const MessageHeader message_header(filter_data, filter_size);
             symbol_filters.emplace_back(
-                make_symbol_filter(message_header, filter_data, filter_size));
+                make_symbol_filter(message_header, std::span{filter_data, filter_size}));
         });
 
         auto& permissions = symbol.permissions();
@@ -214,38 +223,231 @@ void decode_exchange_info(std::vector<char>&& payload, const MessageHeader& mess
         sor.base_asset = decoder.getBaseAssetAsString();
         result.sors.push_back(std::move(sor));
     });
-    print_json(result);
+    return result;
+}
+
+GetOrder decode_get_order(const std::span<char> payload, const MessageHeader& message_header) {
+    auto get_order = message_from_header<OrderResponse>(payload, message_header);
+
+    GetOrder result;
+    auto price_exponent = get_order.priceExponent();
+    auto qty_exponent = get_order.qtyExponent();
+    result.order_id = get_order.orderId();
+
+    const auto order_list_id = get_order.orderListId();
+    if (order_list_id != OrderResponse::orderListIdNullValue()) {
+        result.order_list_id = order_list_id;
+    }
+    result.price = Decimal{get_order.price(), price_exponent};
+    result.orig_qty = Decimal{get_order.origQty(), qty_exponent};
+    result.executed_qty = Decimal{get_order.executedQty(), qty_exponent};
+    result.cummulative_quote_qty = Decimal{get_order.cummulativeQuoteQty(), price_exponent};
+    result.status = get_order.status();
+    result.time_in_force = get_order.timeInForce();
+    result.order_type = get_order.orderType();
+    result.side = get_order.side();
+
+    const auto stop_price = get_order.stopPrice();
+    if (stop_price != OrderResponse::stopPriceNullValue()) {
+        result.stop_price = Decimal{stop_price, price_exponent};
+    }
+    const auto trailing_delta = get_order.trailingDelta();
+    if (trailing_delta != OrderResponse::trailingDeltaNullValue()) {
+        result.trailing_delta = trailing_delta;
+    }
+    const auto trailing_time = get_order.trailingTime();
+    if (trailing_time != OrderResponse::trailingTimeNullValue()) {
+        result.trailing_time = trailing_time;
+    }
+    const auto iceberg_qty = get_order.icebergQty();
+    if (iceberg_qty != OrderResponse::icebergQtyNullValue()) {
+        result.iceberg_qty = Decimal{iceberg_qty, qty_exponent};
+    }
+    result.time = get_order.time();
+    result.update_time = get_order.updateTime();
+    result.is_working = as_bool(get_order.isWorking());
+
+    const auto working_time = get_order.workingTime();
+    if (working_time != OrderResponse::workingTimeNullValue()) {
+        result.working_time = working_time;  // SBE timestamps are in microseconds.
+    }
+    result.orig_quote_order_qty = Decimal{get_order.origQuoteOrderQty(), price_exponent};
+
+    const auto strategy_id = get_order.strategyId();
+    if (strategy_id != OrderResponse::strategyIdNullValue()) {
+        result.strategy_id = strategy_id;
+    }
+    const auto strategy_type = get_order.strategyType();
+    if (strategy_type != OrderResponse::strategyTypeNullValue()) {
+        result.strategy_type = strategy_type;
+    }
+    result.order_capacity = get_order.orderCapacity();
+    result.working_floor = get_order.workingFloor();
+    result.self_trade_prevention_mode = get_order.selfTradePreventionMode();
+    const auto prevented_match_id = get_order.preventedMatchId();
+    if (prevented_match_id != OrderResponse::preventedMatchIdNullValue()) {
+        result.prevented_match_id = prevented_match_id;
+    }
+    const auto prevented_quantity = get_order.preventedQuantity();
+    if (prevented_quantity != OrderResponse::preventedQuantityNullValue()) {
+        result.prevented_quantity = Decimal{prevented_quantity, qty_exponent};
+    }
+    result.used_sor = get_order.usedSor();
+    result.symbol = get_order.getSymbolAsString();
+    result.client_order_id = get_order.getClientOrderIdAsString();
+    return result;
+}
+
+NewOrder decode_post_order(const std::span<char> payload, const MessageHeader& message_header) {
+    auto post_order = message_from_header<NewOrderResultResponse>(payload, message_header);
+
+    NewOrder result;
+    auto price_exponent = post_order.priceExponent();
+    auto qty_exponent = post_order.qtyExponent();
+    result.order_id = post_order.orderId();
+
+    const auto order_list_id = post_order.orderListId();
+    if (order_list_id != NewOrderResultResponse::orderListIdNullValue()) {
+        result.order_list_id = order_list_id;
+    }
+
+    result.transaction_time = post_order.transactTime();  // SBE timestamps are in microseconds.
+    result.price = Decimal{post_order.price(), price_exponent};
+    result.orig_qty = Decimal{post_order.origQty(), qty_exponent};
+    result.executed_qty = Decimal{post_order.executedQty(), qty_exponent};
+    result.cummulative_quote_qty = Decimal{post_order.cummulativeQuoteQty(), price_exponent};
+    result.status = post_order.status();
+    result.time_in_force = post_order.timeInForce();
+    result.order_type = post_order.orderType();
+    result.side = post_order.side();
+
+    const auto stop_price = post_order.stopPrice();
+    if (stop_price != NewOrderResultResponse::stopPriceNullValue()) {
+        result.stop_price = Decimal{stop_price, price_exponent};
+    }
+
+    const auto trailing_delta = post_order.trailingDelta();
+    if (trailing_delta != NewOrderResultResponse::trailingDeltaNullValue()) {
+        result.trailing_delta = trailing_delta;
+    }
+
+    const auto trailing_time = post_order.trailingTime();
+    if (trailing_time != NewOrderResultResponse::trailingTimeNullValue()) {
+        result.trailing_time = trailing_time;
+    }
+
+    const auto working_time = post_order.workingTime();
+    if (working_time != NewOrderResultResponse::workingTimeNullValue()) {
+        result.working_time = working_time;  // SBE timestamps are in microseconds.
+    }
+
+    const auto iceberg_qty = post_order.icebergQty();
+    if (iceberg_qty != NewOrderResultResponse::icebergQtyNullValue()) {
+        result.iceberg_qty = iceberg_qty;
+    }
+
+    const auto strategy_id = post_order.strategyId();
+    if (strategy_id != NewOrderResultResponse::strategyIdNullValue()) {
+        result.strategy_id = strategy_id;
+    }
+
+    const auto strategy_type = post_order.strategyType();
+    if (strategy_type != NewOrderResultResponse::strategyTypeNullValue()) {
+        result.strategy_type = strategy_type;
+    }
+
+    result.order_capacity = post_order.orderCapacity();
+    result.working_floor = post_order.workingFloor();
+    result.self_trade_prevention_mode = post_order.selfTradePreventionMode();
+
+    const auto trade_group_id = post_order.tradeGroupId();
+    if (trade_group_id != NewOrderResultResponse::tradeGroupIdNullValue()) {
+        result.trade_group_id = trade_group_id;
+    }
+
+    const auto prevented_quantity = post_order.preventedQuantity();
+    if (prevented_quantity != NewOrderResultResponse::preventedQuantityNullValue()) {
+        result.prevented_quantity = Decimal{prevented_quantity, qty_exponent};
+    }
+
+    result.used_sor = post_order.usedSor();
+    result.symbol = post_order.getSymbolAsString();
+    result.client_order_id = post_order.getClientOrderIdAsString();
+    return result;
+}
+
+WebSocketMetadata decode_websocket_response(const std::span<char> payload,
+                                            const MessageHeader& message_header) {
+    auto decoder = message_from_header<WebSocketResponse>(payload, message_header);
+    const bool deprecated = as_bool(decoder.sbeSchemaIdVersionDeprecated());
+    if (deprecated) {
+        fprintf(stderr, "Warning: sbe-sample-app is using a deprecated schema\n");
+    }
+    const auto status = decoder.status();
+    auto& rate_limits = decoder.rateLimits();
+    std::vector<WebSocketMetadata::RateLimit> limits;
+    limits.reserve(rate_limits.count());
+    rate_limits.forEach([&](const auto& rate_limit) {
+        const auto rate_limit_type = rate_limit.rateLimitType();
+        const auto interval = rate_limit.interval();
+        const auto interval_num = rate_limit.intervalNum();
+        const auto limit = rate_limit.rateLimit();
+        const auto count = rate_limit.current();
+        limits.push_back(
+            WebSocketMetadata::RateLimit{rate_limit_type, interval, interval_num, limit, count});
+    });
+    auto id = decoder.getIdAsString();
+    const auto result_length = decoder.resultLength();
+    auto result = std::span<char>(const_cast<char*>(decoder.result()), result_length);
+    return WebSocketMetadata{status, std::move(limits), std::move(id), std::move(result)};
 }
 
 int main() {
-    auto payload = read_payload(STDIN_FILENO);
-    const MessageHeader message_header(payload.data(), payload.size());
+    auto storage = read_payload(STDIN_FILENO);
+    auto payload = std::span<char>{storage};
+    MessageHeader message_header{payload.data(), payload.size()};
 
-    const auto template_id = message_header.templateId();
+    auto template_id = message_header.templateId();
+    std::optional<WebSocketMetadata> websocket_meta;
+    if (template_id == WebSocketResponse::sbeTemplateId()) {
+        websocket_meta = decode_websocket_response(payload, message_header);
+        payload = websocket_meta->result;
+        message_header = MessageHeader{payload.data(), payload.size()};
+        template_id = message_header.templateId();
+    }
     if (template_id == ErrorResponse::sbeTemplateId()) {
         // A separate "ErrorResponse" message is returned for errors and its
         // format is expected to be backwards compatible across all schema IDs.
-        auto decoder =
-            message_from_header<ErrorResponse>(payload.data(), payload.size(), message_header);
+        auto decoder = message_from_header<ErrorResponse>(payload, message_header);
         Error error(decoder);
-        print_json(error);
+        print_json(websocket_meta, error);
         return 1;
     }
 
-    const auto schema_id = message_header.schemaId();
-    if (schema_id != ExchangeInfoResponse::sbeSchemaId()) {
-        fprintf(stderr, "Unexpected schema ID %d\n", schema_id);
-        return 1;
-    }
-    const auto version = message_header.version();
-    if (version != ExchangeInfoResponse::sbeSchemaVersion()) {
-        fprintf(stderr, "Warning: Unexpected version %d\n", version);
-        // Schemas with the same ID are expected to be backwards compatible.
+    if (!websocket_meta) {
+        const auto schema_id = message_header.schemaId();
+        if (schema_id != ExchangeInfoResponse::sbeSchemaId()) {
+            fprintf(stderr, "Unexpected schema ID %d\n", schema_id);
+            return 1;
+        }
+        const auto version = message_header.version();
+        if (version != ExchangeInfoResponse::sbeSchemaVersion()) {
+            fprintf(stderr, "Warning: Unexpected version %d\n", version);
+            // Schemas with the same ID are expected to be backwards compatible.
+        }
     }
     if (template_id == AccountResponse::sbeTemplateId()) {
-        decode_account(std::move(payload), message_header);
+        const auto result = decode_account(payload, message_header);
+        print_json(websocket_meta, result);
     } else if (template_id == ExchangeInfoResponse::sbeTemplateId()) {
-        decode_exchange_info(std::move(payload), message_header);
+        const auto result = decode_exchange_info(payload, message_header);
+        print_json(websocket_meta, result);
+    } else if (template_id == NewOrderResultResponse::sbeTemplateId()) {
+        const auto result = decode_post_order(payload, message_header);
+        print_json(websocket_meta, result);
+    } else if (template_id == OrderResponse::sbeTemplateId()) {
+        const auto result = decode_get_order(payload, message_header);
+        print_json(websocket_meta, result);
     } else {
         fprintf(stderr, "Unexpected template ID %d\n", template_id);
         return 1;
