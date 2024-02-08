@@ -1,6 +1,6 @@
 /* Generated SBE (Simple Binary Encoding) message codec */
-#ifndef _SPOT_SBE_NEWORDERACKRESPONSE_CXX_H_
-#define _SPOT_SBE_NEWORDERACKRESPONSE_CXX_H_
+#ifndef _SPOT_SBE_WEBSOCKETSESSIONSTATUSRESPONSE_CXX_H_
+#define _SPOT_SBE_WEBSOCKETSESSIONSTATUSRESPONSE_CXX_H_
 
 #if __cplusplus >= 201103L
 #  define SBE_CONSTEXPR constexpr
@@ -116,7 +116,7 @@
 
 namespace spot_sbe {
 
-class NewOrderAckResponse
+class WebSocketSessionStatusResponse
 {
 private:
     char *m_buffer = nullptr;
@@ -132,8 +132,8 @@ private:
     }
 
 public:
-    static const std::uint16_t SBE_BLOCK_LENGTH = static_cast<std::uint16_t>(24);
-    static const std::uint16_t SBE_TEMPLATE_ID = static_cast<std::uint16_t>(300);
+    static const std::uint16_t SBE_BLOCK_LENGTH = static_cast<std::uint16_t>(25);
+    static const std::uint16_t SBE_TEMPLATE_ID = static_cast<std::uint16_t>(52);
     static const std::uint16_t SBE_SCHEMA_ID = static_cast<std::uint16_t>(1);
     static const std::uint16_t SBE_SCHEMA_VERSION = static_cast<std::uint16_t>(0);
     static constexpr const char* SBE_SEMANTIC_VERSION = "5.2";
@@ -157,9 +157,9 @@ public:
 
     using messageHeader = MessageHeader;
 
-    NewOrderAckResponse() = default;
+    WebSocketSessionStatusResponse() = default;
 
-    NewOrderAckResponse(
+    WebSocketSessionStatusResponse(
         char *buffer,
         const std::uint64_t offset,
         const std::uint64_t bufferLength,
@@ -174,23 +174,23 @@ public:
     {
     }
 
-    NewOrderAckResponse(char *buffer, const std::uint64_t bufferLength) :
-        NewOrderAckResponse(buffer, 0, bufferLength, sbeBlockLength(), sbeSchemaVersion())
+    WebSocketSessionStatusResponse(char *buffer, const std::uint64_t bufferLength) :
+        WebSocketSessionStatusResponse(buffer, 0, bufferLength, sbeBlockLength(), sbeSchemaVersion())
     {
     }
 
-    NewOrderAckResponse(
+    WebSocketSessionStatusResponse(
         char *buffer,
         const std::uint64_t bufferLength,
         const std::uint64_t actingBlockLength,
         const std::uint64_t actingVersion) :
-        NewOrderAckResponse(buffer, 0, bufferLength, actingBlockLength, actingVersion)
+        WebSocketSessionStatusResponse(buffer, 0, bufferLength, actingBlockLength, actingVersion)
     {
     }
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t sbeBlockLength() SBE_NOEXCEPT
     {
-        return static_cast<std::uint16_t>(24);
+        return static_cast<std::uint16_t>(25);
     }
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t sbeBlockAndHeaderLength() SBE_NOEXCEPT
@@ -200,7 +200,7 @@ public:
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t sbeTemplateId() SBE_NOEXCEPT
     {
-        return static_cast<std::uint16_t>(300);
+        return static_cast<std::uint16_t>(52);
     }
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t sbeSchemaId() SBE_NOEXCEPT
@@ -228,7 +228,7 @@ public:
         return m_offset;
     }
 
-    NewOrderAckResponse &wrapForEncode(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength)
+    WebSocketSessionStatusResponse &wrapForEncode(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength)
     {
         m_buffer = buffer;
         m_bufferLength = bufferLength;
@@ -239,7 +239,7 @@ public:
         return *this;
     }
 
-    NewOrderAckResponse &wrapAndApplyHeader(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength)
+    WebSocketSessionStatusResponse &wrapAndApplyHeader(char *buffer, const std::uint64_t offset, const std::uint64_t bufferLength)
     {
         messageHeader hdr(buffer, offset, bufferLength, sbeSchemaVersion());
 
@@ -258,7 +258,7 @@ public:
         return *this;
     }
 
-    NewOrderAckResponse &wrapForDecode(
+    WebSocketSessionStatusResponse &wrapForDecode(
         char *buffer,
         const std::uint64_t offset,
         const std::uint64_t actingBlockLength,
@@ -274,7 +274,7 @@ public:
         return *this;
     }
 
-    NewOrderAckResponse &sbeRewind()
+    WebSocketSessionStatusResponse &sbeRewind()
     {
         return wrapForDecode(m_buffer, m_offset, m_actingBlockLength, m_actingVersion, m_bufferLength);
     }
@@ -306,7 +306,7 @@ public:
 
     SBE_NODISCARD std::uint64_t decodeLength() const
     {
-        NewOrderAckResponse skipper(m_buffer, m_offset, m_bufferLength, sbeBlockLength(), m_actingVersion);
+        WebSocketSessionStatusResponse skipper(m_buffer, m_offset, m_bufferLength, sbeBlockLength(), m_actingVersion);
         skipper.skip();
         return skipper.encodedLength();
     }
@@ -331,70 +331,7 @@ public:
         return m_actingVersion;
     }
 
-    SBE_NODISCARD static const char *orderIdMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::PRESENCE: return "required";
-            default: return "";
-        }
-    }
-
-    static SBE_CONSTEXPR std::uint16_t orderIdId() SBE_NOEXCEPT
-    {
-        return 1;
-    }
-
-    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t orderIdSinceVersion() SBE_NOEXCEPT
-    {
-        return 0;
-    }
-
-    SBE_NODISCARD bool orderIdInActingVersion() SBE_NOEXCEPT
-    {
-        return true;
-    }
-
-    SBE_NODISCARD static SBE_CONSTEXPR std::size_t orderIdEncodingOffset() SBE_NOEXCEPT
-    {
-        return 0;
-    }
-
-    static SBE_CONSTEXPR std::int64_t orderIdNullValue() SBE_NOEXCEPT
-    {
-        return SBE_NULLVALUE_INT64;
-    }
-
-    static SBE_CONSTEXPR std::int64_t orderIdMinValue() SBE_NOEXCEPT
-    {
-        return INT64_C(-9223372036854775807);
-    }
-
-    static SBE_CONSTEXPR std::int64_t orderIdMaxValue() SBE_NOEXCEPT
-    {
-        return INT64_C(9223372036854775807);
-    }
-
-    static SBE_CONSTEXPR std::size_t orderIdEncodingLength() SBE_NOEXCEPT
-    {
-        return 8;
-    }
-
-    SBE_NODISCARD std::int64_t orderId() const SBE_NOEXCEPT
-    {
-        std::int64_t val;
-        std::memcpy(&val, m_buffer + m_offset + 0, sizeof(std::int64_t));
-        return SBE_LITTLE_ENDIAN_ENCODE_64(val);
-    }
-
-    NewOrderAckResponse &orderId(const std::int64_t value) SBE_NOEXCEPT
-    {
-        std::int64_t val = SBE_LITTLE_ENDIAN_ENCODE_64(value);
-        std::memcpy(m_buffer + m_offset + 0, &val, sizeof(std::int64_t));
-        return *this;
-    }
-
-    SBE_NODISCARD static const char *orderListIdMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+    SBE_NODISCARD static const char *authorizedSinceMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
     {
         switch (metaAttribute)
         {
@@ -403,61 +340,124 @@ public:
         }
     }
 
-    static SBE_CONSTEXPR std::uint16_t orderListIdId() SBE_NOEXCEPT
+    static SBE_CONSTEXPR std::uint16_t authorizedSinceId() SBE_NOEXCEPT
     {
-        return 2;
+        return 1;
     }
 
-    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t orderListIdSinceVersion() SBE_NOEXCEPT
+    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t authorizedSinceSinceVersion() SBE_NOEXCEPT
     {
         return 0;
     }
 
-    SBE_NODISCARD bool orderListIdInActingVersion() SBE_NOEXCEPT
+    SBE_NODISCARD bool authorizedSinceInActingVersion() SBE_NOEXCEPT
     {
         return true;
     }
 
-    SBE_NODISCARD static SBE_CONSTEXPR std::size_t orderListIdEncodingOffset() SBE_NOEXCEPT
+    SBE_NODISCARD static SBE_CONSTEXPR std::size_t authorizedSinceEncodingOffset() SBE_NOEXCEPT
     {
-        return 8;
+        return 0;
     }
 
-    static SBE_CONSTEXPR std::int64_t orderListIdNullValue() SBE_NOEXCEPT
+    static SBE_CONSTEXPR std::int64_t authorizedSinceNullValue() SBE_NOEXCEPT
     {
         return SBE_NULLVALUE_INT64;
     }
 
-    static SBE_CONSTEXPR std::int64_t orderListIdMinValue() SBE_NOEXCEPT
+    static SBE_CONSTEXPR std::int64_t authorizedSinceMinValue() SBE_NOEXCEPT
     {
         return INT64_C(-9223372036854775807);
     }
 
-    static SBE_CONSTEXPR std::int64_t orderListIdMaxValue() SBE_NOEXCEPT
+    static SBE_CONSTEXPR std::int64_t authorizedSinceMaxValue() SBE_NOEXCEPT
     {
         return INT64_C(9223372036854775807);
     }
 
-    static SBE_CONSTEXPR std::size_t orderListIdEncodingLength() SBE_NOEXCEPT
+    static SBE_CONSTEXPR std::size_t authorizedSinceEncodingLength() SBE_NOEXCEPT
     {
         return 8;
     }
 
-    SBE_NODISCARD std::int64_t orderListId() const SBE_NOEXCEPT
+    SBE_NODISCARD std::int64_t authorizedSince() const SBE_NOEXCEPT
+    {
+        std::int64_t val;
+        std::memcpy(&val, m_buffer + m_offset + 0, sizeof(std::int64_t));
+        return SBE_LITTLE_ENDIAN_ENCODE_64(val);
+    }
+
+    WebSocketSessionStatusResponse &authorizedSince(const std::int64_t value) SBE_NOEXCEPT
+    {
+        std::int64_t val = SBE_LITTLE_ENDIAN_ENCODE_64(value);
+        std::memcpy(m_buffer + m_offset + 0, &val, sizeof(std::int64_t));
+        return *this;
+    }
+
+    SBE_NODISCARD static const char *connectedSinceMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::PRESENCE: return "required";
+            default: return "";
+        }
+    }
+
+    static SBE_CONSTEXPR std::uint16_t connectedSinceId() SBE_NOEXCEPT
+    {
+        return 2;
+    }
+
+    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t connectedSinceSinceVersion() SBE_NOEXCEPT
+    {
+        return 0;
+    }
+
+    SBE_NODISCARD bool connectedSinceInActingVersion() SBE_NOEXCEPT
+    {
+        return true;
+    }
+
+    SBE_NODISCARD static SBE_CONSTEXPR std::size_t connectedSinceEncodingOffset() SBE_NOEXCEPT
+    {
+        return 8;
+    }
+
+    static SBE_CONSTEXPR std::int64_t connectedSinceNullValue() SBE_NOEXCEPT
+    {
+        return SBE_NULLVALUE_INT64;
+    }
+
+    static SBE_CONSTEXPR std::int64_t connectedSinceMinValue() SBE_NOEXCEPT
+    {
+        return INT64_C(-9223372036854775807);
+    }
+
+    static SBE_CONSTEXPR std::int64_t connectedSinceMaxValue() SBE_NOEXCEPT
+    {
+        return INT64_C(9223372036854775807);
+    }
+
+    static SBE_CONSTEXPR std::size_t connectedSinceEncodingLength() SBE_NOEXCEPT
+    {
+        return 8;
+    }
+
+    SBE_NODISCARD std::int64_t connectedSince() const SBE_NOEXCEPT
     {
         std::int64_t val;
         std::memcpy(&val, m_buffer + m_offset + 8, sizeof(std::int64_t));
         return SBE_LITTLE_ENDIAN_ENCODE_64(val);
     }
 
-    NewOrderAckResponse &orderListId(const std::int64_t value) SBE_NOEXCEPT
+    WebSocketSessionStatusResponse &connectedSince(const std::int64_t value) SBE_NOEXCEPT
     {
         std::int64_t val = SBE_LITTLE_ENDIAN_ENCODE_64(value);
         std::memcpy(m_buffer + m_offset + 8, &val, sizeof(std::int64_t));
         return *this;
     }
 
-    SBE_NODISCARD static const char *transactTimeMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+    SBE_NODISCARD static const char *returnRateLimitsMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
     {
         switch (metaAttribute)
         {
@@ -466,61 +466,116 @@ public:
         }
     }
 
-    static SBE_CONSTEXPR std::uint16_t transactTimeId() SBE_NOEXCEPT
+    static SBE_CONSTEXPR std::uint16_t returnRateLimitsId() SBE_NOEXCEPT
     {
         return 3;
     }
 
-    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t transactTimeSinceVersion() SBE_NOEXCEPT
+    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t returnRateLimitsSinceVersion() SBE_NOEXCEPT
     {
         return 0;
     }
 
-    SBE_NODISCARD bool transactTimeInActingVersion() SBE_NOEXCEPT
+    SBE_NODISCARD bool returnRateLimitsInActingVersion() SBE_NOEXCEPT
     {
         return true;
     }
 
-    SBE_NODISCARD static SBE_CONSTEXPR std::size_t transactTimeEncodingOffset() SBE_NOEXCEPT
+    SBE_NODISCARD static SBE_CONSTEXPR std::size_t returnRateLimitsEncodingOffset() SBE_NOEXCEPT
     {
         return 16;
     }
 
-    static SBE_CONSTEXPR std::int64_t transactTimeNullValue() SBE_NOEXCEPT
+    SBE_NODISCARD static SBE_CONSTEXPR std::size_t returnRateLimitsEncodingLength() SBE_NOEXCEPT
+    {
+        return 1;
+    }
+
+    SBE_NODISCARD std::uint8_t returnRateLimitsRaw() const SBE_NOEXCEPT
+    {
+        std::uint8_t val;
+        std::memcpy(&val, m_buffer + m_offset + 16, sizeof(std::uint8_t));
+        return (val);
+    }
+
+    SBE_NODISCARD BoolEnum::Value returnRateLimits() const
+    {
+        std::uint8_t val;
+        std::memcpy(&val, m_buffer + m_offset + 16, sizeof(std::uint8_t));
+        return BoolEnum::get((val));
+    }
+
+    WebSocketSessionStatusResponse &returnRateLimits(const BoolEnum::Value value) SBE_NOEXCEPT
+    {
+        std::uint8_t val = (value);
+        std::memcpy(m_buffer + m_offset + 16, &val, sizeof(std::uint8_t));
+        return *this;
+    }
+
+    SBE_NODISCARD static const char *serverTimeMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::PRESENCE: return "required";
+            default: return "";
+        }
+    }
+
+    static SBE_CONSTEXPR std::uint16_t serverTimeId() SBE_NOEXCEPT
+    {
+        return 4;
+    }
+
+    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t serverTimeSinceVersion() SBE_NOEXCEPT
+    {
+        return 0;
+    }
+
+    SBE_NODISCARD bool serverTimeInActingVersion() SBE_NOEXCEPT
+    {
+        return true;
+    }
+
+    SBE_NODISCARD static SBE_CONSTEXPR std::size_t serverTimeEncodingOffset() SBE_NOEXCEPT
+    {
+        return 17;
+    }
+
+    static SBE_CONSTEXPR std::int64_t serverTimeNullValue() SBE_NOEXCEPT
     {
         return SBE_NULLVALUE_INT64;
     }
 
-    static SBE_CONSTEXPR std::int64_t transactTimeMinValue() SBE_NOEXCEPT
+    static SBE_CONSTEXPR std::int64_t serverTimeMinValue() SBE_NOEXCEPT
     {
         return INT64_C(-9223372036854775807);
     }
 
-    static SBE_CONSTEXPR std::int64_t transactTimeMaxValue() SBE_NOEXCEPT
+    static SBE_CONSTEXPR std::int64_t serverTimeMaxValue() SBE_NOEXCEPT
     {
         return INT64_C(9223372036854775807);
     }
 
-    static SBE_CONSTEXPR std::size_t transactTimeEncodingLength() SBE_NOEXCEPT
+    static SBE_CONSTEXPR std::size_t serverTimeEncodingLength() SBE_NOEXCEPT
     {
         return 8;
     }
 
-    SBE_NODISCARD std::int64_t transactTime() const SBE_NOEXCEPT
+    SBE_NODISCARD std::int64_t serverTime() const SBE_NOEXCEPT
     {
         std::int64_t val;
-        std::memcpy(&val, m_buffer + m_offset + 16, sizeof(std::int64_t));
+        std::memcpy(&val, m_buffer + m_offset + 17, sizeof(std::int64_t));
         return SBE_LITTLE_ENDIAN_ENCODE_64(val);
     }
 
-    NewOrderAckResponse &transactTime(const std::int64_t value) SBE_NOEXCEPT
+    WebSocketSessionStatusResponse &serverTime(const std::int64_t value) SBE_NOEXCEPT
     {
         std::int64_t val = SBE_LITTLE_ENDIAN_ENCODE_64(value);
-        std::memcpy(m_buffer + m_offset + 16, &val, sizeof(std::int64_t));
+        std::memcpy(m_buffer + m_offset + 17, &val, sizeof(std::int64_t));
         return *this;
     }
 
-    SBE_NODISCARD static const char *symbolMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+    SBE_NODISCARD static const char *apiKeyMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
     {
         switch (metaAttribute)
         {
@@ -529,66 +584,66 @@ public:
         }
     }
 
-    static const char *symbolCharacterEncoding() SBE_NOEXCEPT
+    static const char *apiKeyCharacterEncoding() SBE_NOEXCEPT
     {
         return "UTF-8";
     }
 
-    static SBE_CONSTEXPR std::uint64_t symbolSinceVersion() SBE_NOEXCEPT
+    static SBE_CONSTEXPR std::uint64_t apiKeySinceVersion() SBE_NOEXCEPT
     {
         return 0;
     }
 
-    bool symbolInActingVersion() SBE_NOEXCEPT
+    bool apiKeyInActingVersion() SBE_NOEXCEPT
     {
         return true;
     }
 
-    static SBE_CONSTEXPR std::uint16_t symbolId() SBE_NOEXCEPT
+    static SBE_CONSTEXPR std::uint16_t apiKeyId() SBE_NOEXCEPT
     {
         return 200;
     }
 
-    static SBE_CONSTEXPR std::uint64_t symbolHeaderLength() SBE_NOEXCEPT
+    static SBE_CONSTEXPR std::uint64_t apiKeyHeaderLength() SBE_NOEXCEPT
     {
-        return 1;
+        return 2;
     }
 
-    SBE_NODISCARD std::uint8_t symbolLength() const
+    SBE_NODISCARD std::uint16_t apiKeyLength() const
     {
-        std::uint8_t length;
-        std::memcpy(&length, m_buffer + sbePosition(), sizeof(std::uint8_t));
-        return (length);
+        std::uint16_t length;
+        std::memcpy(&length, m_buffer + sbePosition(), sizeof(std::uint16_t));
+        return SBE_LITTLE_ENDIAN_ENCODE_16(length);
     }
 
-    std::uint64_t skipSymbol()
+    std::uint64_t skipApiKey()
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = sbePosition();
-        std::uint8_t lengthFieldValue;
-        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(std::uint8_t));
-        std::uint64_t dataLength = (lengthFieldValue);
+        std::uint16_t lengthFieldValue;
+        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(std::uint16_t));
+        std::uint64_t dataLength = SBE_LITTLE_ENDIAN_ENCODE_16(lengthFieldValue);
         sbePosition(lengthPosition + lengthOfLengthField + dataLength);
         return dataLength;
     }
 
-    SBE_NODISCARD const char *symbol()
+    SBE_NODISCARD const char *apiKey()
     {
-        std::uint8_t lengthFieldValue;
-        std::memcpy(&lengthFieldValue, m_buffer + sbePosition(), sizeof(std::uint8_t));
-        const char *fieldPtr = m_buffer + sbePosition() + 1;
-        sbePosition(sbePosition() + 1 + (lengthFieldValue));
+        std::uint16_t lengthFieldValue;
+        std::memcpy(&lengthFieldValue, m_buffer + sbePosition(), sizeof(std::uint16_t));
+        const char *fieldPtr = m_buffer + sbePosition() + 2;
+        sbePosition(sbePosition() + 2 + SBE_LITTLE_ENDIAN_ENCODE_16(lengthFieldValue));
         return fieldPtr;
     }
 
-    std::uint64_t getSymbol(char *dst, const std::uint64_t length)
+    std::uint64_t getApiKey(char *dst, const std::uint64_t length)
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = sbePosition();
         sbePosition(lengthPosition + lengthOfLengthField);
-        std::uint8_t lengthFieldValue;
-        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(std::uint8_t));
-        std::uint64_t dataLength = (lengthFieldValue);
+        std::uint16_t lengthFieldValue;
+        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(std::uint16_t));
+        std::uint64_t dataLength = SBE_LITTLE_ENDIAN_ENCODE_16(lengthFieldValue);
         std::uint64_t bytesToCopy = length < dataLength ? length : dataLength;
         std::uint64_t pos = sbePosition();
         sbePosition(pos + dataLength);
@@ -596,14 +651,14 @@ public:
         return bytesToCopy;
     }
 
-    NewOrderAckResponse &putSymbol(const char *src, const std::uint8_t length)
+    WebSocketSessionStatusResponse &putApiKey(const char *src, const std::uint16_t length)
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = sbePosition();
-        std::uint8_t lengthFieldValue = (length);
+        std::uint16_t lengthFieldValue = SBE_LITTLE_ENDIAN_ENCODE_16(length);
         sbePosition(lengthPosition + lengthOfLengthField);
-        std::memcpy(m_buffer + lengthPosition, &lengthFieldValue, sizeof(std::uint8_t));
-        if (length != std::uint8_t(0))
+        std::memcpy(m_buffer + lengthPosition, &lengthFieldValue, sizeof(std::uint16_t));
+        if (length != std::uint16_t(0))
         {
             std::uint64_t pos = sbePosition();
             sbePosition(pos + length);
@@ -612,24 +667,24 @@ public:
         return *this;
     }
 
-    std::string getSymbolAsString()
+    std::string getApiKeyAsString()
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = sbePosition();
         sbePosition(lengthPosition + lengthOfLengthField);
-        std::uint8_t lengthFieldValue;
-        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(std::uint8_t));
-        std::uint64_t dataLength = (lengthFieldValue);
+        std::uint16_t lengthFieldValue;
+        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(std::uint16_t));
+        std::uint64_t dataLength = SBE_LITTLE_ENDIAN_ENCODE_16(lengthFieldValue);
         std::uint64_t pos = sbePosition();
         const std::string result(m_buffer + pos, dataLength);
         sbePosition(pos + dataLength);
         return result;
     }
 
-    std::string getSymbolAsJsonEscapedString()
+    std::string getApiKeyAsJsonEscapedString()
     {
         std::ostringstream oss;
-        std::string s = getSymbolAsString();
+        std::string s = getApiKeyAsString();
 
         for (const auto c : s)
         {
@@ -660,14 +715,14 @@ public:
     }
 
     #if __cplusplus >= 201703L
-    std::string_view getSymbolAsStringView()
+    std::string_view getApiKeyAsStringView()
     {
-        std::uint64_t lengthOfLengthField = 1;
+        std::uint64_t lengthOfLengthField = 2;
         std::uint64_t lengthPosition = sbePosition();
         sbePosition(lengthPosition + lengthOfLengthField);
-        std::uint8_t lengthFieldValue;
-        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(std::uint8_t));
-        std::uint64_t dataLength = (lengthFieldValue);
+        std::uint16_t lengthFieldValue;
+        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(std::uint16_t));
+        std::uint64_t dataLength = SBE_LITTLE_ENDIAN_ENCODE_16(lengthFieldValue);
         std::uint64_t pos = sbePosition();
         const std::string_view result(m_buffer + pos, dataLength);
         sbePosition(pos + dataLength);
@@ -675,206 +730,31 @@ public:
     }
     #endif
 
-    NewOrderAckResponse &putSymbol(const std::string &str)
+    WebSocketSessionStatusResponse &putApiKey(const std::string &str)
     {
-        if (str.length() > 254)
+        if (str.length() > 65534)
         {
             throw std::runtime_error("std::string too long for length type [E109]");
         }
-        return putSymbol(str.data(), static_cast<std::uint8_t>(str.length()));
+        return putApiKey(str.data(), static_cast<std::uint16_t>(str.length()));
     }
 
     #if __cplusplus >= 201703L
-    NewOrderAckResponse &putSymbol(const std::string_view str)
+    WebSocketSessionStatusResponse &putApiKey(const std::string_view str)
     {
-        if (str.length() > 254)
+        if (str.length() > 65534)
         {
             throw std::runtime_error("std::string too long for length type [E109]");
         }
-        return putSymbol(str.data(), static_cast<std::uint8_t>(str.length()));
-    }
-    #endif
-
-    SBE_NODISCARD static const char *clientOrderIdMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
-    {
-        switch (metaAttribute)
-        {
-            case MetaAttribute::PRESENCE: return "required";
-            default: return "";
-        }
-    }
-
-    static const char *clientOrderIdCharacterEncoding() SBE_NOEXCEPT
-    {
-        return "UTF-8";
-    }
-
-    static SBE_CONSTEXPR std::uint64_t clientOrderIdSinceVersion() SBE_NOEXCEPT
-    {
-        return 0;
-    }
-
-    bool clientOrderIdInActingVersion() SBE_NOEXCEPT
-    {
-        return true;
-    }
-
-    static SBE_CONSTEXPR std::uint16_t clientOrderIdId() SBE_NOEXCEPT
-    {
-        return 201;
-    }
-
-    static SBE_CONSTEXPR std::uint64_t clientOrderIdHeaderLength() SBE_NOEXCEPT
-    {
-        return 1;
-    }
-
-    SBE_NODISCARD std::uint8_t clientOrderIdLength() const
-    {
-        std::uint8_t length;
-        std::memcpy(&length, m_buffer + sbePosition(), sizeof(std::uint8_t));
-        return (length);
-    }
-
-    std::uint64_t skipClientOrderId()
-    {
-        std::uint64_t lengthOfLengthField = 1;
-        std::uint64_t lengthPosition = sbePosition();
-        std::uint8_t lengthFieldValue;
-        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(std::uint8_t));
-        std::uint64_t dataLength = (lengthFieldValue);
-        sbePosition(lengthPosition + lengthOfLengthField + dataLength);
-        return dataLength;
-    }
-
-    SBE_NODISCARD const char *clientOrderId()
-    {
-        std::uint8_t lengthFieldValue;
-        std::memcpy(&lengthFieldValue, m_buffer + sbePosition(), sizeof(std::uint8_t));
-        const char *fieldPtr = m_buffer + sbePosition() + 1;
-        sbePosition(sbePosition() + 1 + (lengthFieldValue));
-        return fieldPtr;
-    }
-
-    std::uint64_t getClientOrderId(char *dst, const std::uint64_t length)
-    {
-        std::uint64_t lengthOfLengthField = 1;
-        std::uint64_t lengthPosition = sbePosition();
-        sbePosition(lengthPosition + lengthOfLengthField);
-        std::uint8_t lengthFieldValue;
-        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(std::uint8_t));
-        std::uint64_t dataLength = (lengthFieldValue);
-        std::uint64_t bytesToCopy = length < dataLength ? length : dataLength;
-        std::uint64_t pos = sbePosition();
-        sbePosition(pos + dataLength);
-        std::memcpy(dst, m_buffer + pos, static_cast<std::size_t>(bytesToCopy));
-        return bytesToCopy;
-    }
-
-    NewOrderAckResponse &putClientOrderId(const char *src, const std::uint8_t length)
-    {
-        std::uint64_t lengthOfLengthField = 1;
-        std::uint64_t lengthPosition = sbePosition();
-        std::uint8_t lengthFieldValue = (length);
-        sbePosition(lengthPosition + lengthOfLengthField);
-        std::memcpy(m_buffer + lengthPosition, &lengthFieldValue, sizeof(std::uint8_t));
-        if (length != std::uint8_t(0))
-        {
-            std::uint64_t pos = sbePosition();
-            sbePosition(pos + length);
-            std::memcpy(m_buffer + pos, src, length);
-        }
-        return *this;
-    }
-
-    std::string getClientOrderIdAsString()
-    {
-        std::uint64_t lengthOfLengthField = 1;
-        std::uint64_t lengthPosition = sbePosition();
-        sbePosition(lengthPosition + lengthOfLengthField);
-        std::uint8_t lengthFieldValue;
-        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(std::uint8_t));
-        std::uint64_t dataLength = (lengthFieldValue);
-        std::uint64_t pos = sbePosition();
-        const std::string result(m_buffer + pos, dataLength);
-        sbePosition(pos + dataLength);
-        return result;
-    }
-
-    std::string getClientOrderIdAsJsonEscapedString()
-    {
-        std::ostringstream oss;
-        std::string s = getClientOrderIdAsString();
-
-        for (const auto c : s)
-        {
-            switch (c)
-            {
-                case '"': oss << "\\\""; break;
-                case '\\': oss << "\\\\"; break;
-                case '\b': oss << "\\b"; break;
-                case '\f': oss << "\\f"; break;
-                case '\n': oss << "\\n"; break;
-                case '\r': oss << "\\r"; break;
-                case '\t': oss << "\\t"; break;
-
-                default:
-                    if ('\x00' <= c && c <= '\x1f')
-                    {
-                        oss << "\\u" << std::hex << std::setw(4)
-                            << std::setfill('0') << (int)(c);
-                    }
-                    else
-                    {
-                        oss << c;
-                    }
-            }
-        }
-
-        return oss.str();
-    }
-
-    #if __cplusplus >= 201703L
-    std::string_view getClientOrderIdAsStringView()
-    {
-        std::uint64_t lengthOfLengthField = 1;
-        std::uint64_t lengthPosition = sbePosition();
-        sbePosition(lengthPosition + lengthOfLengthField);
-        std::uint8_t lengthFieldValue;
-        std::memcpy(&lengthFieldValue, m_buffer + lengthPosition, sizeof(std::uint8_t));
-        std::uint64_t dataLength = (lengthFieldValue);
-        std::uint64_t pos = sbePosition();
-        const std::string_view result(m_buffer + pos, dataLength);
-        sbePosition(pos + dataLength);
-        return result;
-    }
-    #endif
-
-    NewOrderAckResponse &putClientOrderId(const std::string &str)
-    {
-        if (str.length() > 254)
-        {
-            throw std::runtime_error("std::string too long for length type [E109]");
-        }
-        return putClientOrderId(str.data(), static_cast<std::uint8_t>(str.length()));
-    }
-
-    #if __cplusplus >= 201703L
-    NewOrderAckResponse &putClientOrderId(const std::string_view str)
-    {
-        if (str.length() > 254)
-        {
-            throw std::runtime_error("std::string too long for length type [E109]");
-        }
-        return putClientOrderId(str.data(), static_cast<std::uint8_t>(str.length()));
+        return putApiKey(str.data(), static_cast<std::uint16_t>(str.length()));
     }
     #endif
 
 template<typename CharT, typename Traits>
 friend std::basic_ostream<CharT, Traits> & operator << (
-    std::basic_ostream<CharT, Traits> &builder, const NewOrderAckResponse &_writer)
+    std::basic_ostream<CharT, Traits> &builder, const WebSocketSessionStatusResponse &_writer)
 {
-    NewOrderAckResponse writer(
+    WebSocketSessionStatusResponse writer(
         _writer.m_buffer,
         _writer.m_offset,
         _writer.m_bufferLength,
@@ -882,31 +762,30 @@ friend std::basic_ostream<CharT, Traits> & operator << (
         _writer.m_actingVersion);
 
     builder << '{';
-    builder << R"("Name": "NewOrderAckResponse", )";
+    builder << R"("Name": "WebSocketSessionStatusResponse", )";
     builder << R"("sbeTemplateId": )";
     builder << writer.sbeTemplateId();
     builder << ", ";
 
-    builder << R"("orderId": )";
-    builder << +writer.orderId();
+    builder << R"("authorizedSince": )";
+    builder << +writer.authorizedSince();
 
     builder << ", ";
-    builder << R"("orderListId": )";
-    builder << +writer.orderListId();
+    builder << R"("connectedSince": )";
+    builder << +writer.connectedSince();
 
     builder << ", ";
-    builder << R"("transactTime": )";
-    builder << +writer.transactTime();
+    builder << R"("returnRateLimits": )";
+    builder << '"' << writer.returnRateLimits() << '"';
 
     builder << ", ";
-    builder << R"("symbol": )";
+    builder << R"("serverTime": )";
+    builder << +writer.serverTime();
+
+    builder << ", ";
+    builder << R"("apiKey": )";
     builder << '"' <<
-        writer.getSymbolAsJsonEscapedString().c_str() << '"';
-
-    builder << ", ";
-    builder << R"("clientOrderId": )";
-    builder << '"' <<
-        writer.getClientOrderIdAsJsonEscapedString().c_str() << '"';
+        writer.getApiKeyAsJsonEscapedString().c_str() << '"';
 
     builder << '}';
 
@@ -915,8 +794,7 @@ friend std::basic_ostream<CharT, Traits> & operator << (
 
 void skip()
 {
-    skipSymbol();
-    skipClientOrderId();
+    skipApiKey();
 }
 
 SBE_NODISCARD static SBE_CONSTEXPR bool isConstLength() SBE_NOEXCEPT
@@ -924,9 +802,7 @@ SBE_NODISCARD static SBE_CONSTEXPR bool isConstLength() SBE_NOEXCEPT
     return false;
 }
 
-SBE_NODISCARD static std::size_t computeLength(
-    std::size_t symbolLength = 0,
-    std::size_t clientOrderIdLength = 0)
+SBE_NODISCARD static std::size_t computeLength(std::size_t apiKeyLength = 0)
 {
 #if defined(__GNUG__) && !defined(__clang__)
 #pragma GCC diagnostic push
@@ -934,19 +810,12 @@ SBE_NODISCARD static std::size_t computeLength(
 #endif
     std::size_t length = sbeBlockLength();
 
-    length += symbolHeaderLength();
-    if (symbolLength > 254LL)
+    length += apiKeyHeaderLength();
+    if (apiKeyLength > 65534LL)
     {
-        throw std::runtime_error("symbolLength too long for length type [E109]");
+        throw std::runtime_error("apiKeyLength too long for length type [E109]");
     }
-    length += symbolLength;
-
-    length += clientOrderIdHeaderLength();
-    if (clientOrderIdLength > 254LL)
-    {
-        throw std::runtime_error("clientOrderIdLength too long for length type [E109]");
-    }
-    length += clientOrderIdLength;
+    length += apiKeyLength;
 
     return length;
 #if defined(__GNUG__) && !defined(__clang__)

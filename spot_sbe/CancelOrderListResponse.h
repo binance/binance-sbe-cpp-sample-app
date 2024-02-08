@@ -101,6 +101,7 @@
 #include "OptionalMessageData16.h"
 #include "OrderCapacity.h"
 #include "AllocationType.h"
+#include "OptionalVarString.h"
 #include "OrderSide.h"
 #include "OrderTypes.h"
 #include "SelfTradePreventionMode.h"
@@ -111,6 +112,7 @@
 #include "MessageData16.h"
 #include "FilterType.h"
 #include "VarString8.h"
+#include "MessageData.h"
 
 namespace spot_sbe {
 

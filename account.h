@@ -38,10 +38,7 @@ struct Balances {
     Decimal locked;
     std::string asset;
 
-    Balances(const int64_t free,
-             const int64_t locked,
-             std::string asset,
-             const int8_t exponent)
+    Balances(const int64_t free, const int64_t locked, std::string asset, const int8_t exponent)
         : free{free, exponent}, locked{locked, exponent}, asset{std::move(asset)} {}
 };
 
