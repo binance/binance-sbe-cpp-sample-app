@@ -376,6 +376,11 @@ NewOrder decode_post_order(const std::span<char> payload, const MessageHeader& m
     return result;
 }
 
+Error decode_error_response(const std::span<char> payload, const MessageHeader& message_header) {
+    auto decoder = message_from_header<ErrorResponse>(payload, message_header);
+    return Error(decoder);
+}
+
 WebSocketMetadata decode_websocket_response(const std::span<char> payload,
                                             const MessageHeader& message_header) {
     auto decoder = message_from_header<WebSocketResponse>(payload, message_header);
@@ -407,35 +412,40 @@ int main() {
     auto payload = std::span<char>{storage};
     MessageHeader message_header{payload.data(), payload.size()};
 
+    // A separate "ErrorResponse" message is returned for errors and its format
+    // is expected to be backwards compatible across all schema IDs.
     auto template_id = message_header.templateId();
+    if (template_id == ErrorResponse::sbeTemplateId()) {
+        const auto result = decode_error_response(payload, message_header);
+        print_json(result);
+        return 1;
+    }
+
+    const auto schema_id = message_header.schemaId();
+    if (schema_id != ExchangeInfoResponse::sbeSchemaId()) {
+        fprintf(stderr, "Unexpected schema ID %d\n", schema_id);
+        return 1;
+    }
+    const auto version = message_header.version();
+    if (version != ExchangeInfoResponse::sbeSchemaVersion()) {
+        fprintf(stderr, "Warning: Unexpected version %d\n", version);
+        // Schemas with the same ID are expected to be backwards compatible.
+    }
+
     std::optional<WebSocketMetadata> websocket_meta;
     if (template_id == WebSocketResponse::sbeTemplateId()) {
         websocket_meta = decode_websocket_response(payload, message_header);
         payload = websocket_meta->result;
         message_header = MessageHeader{payload.data(), payload.size()};
         template_id = message_header.templateId();
-    }
-    if (template_id == ErrorResponse::sbeTemplateId()) {
-        // A separate "ErrorResponse" message is returned for errors and its
-        // format is expected to be backwards compatible across all schema IDs.
-        auto decoder = message_from_header<ErrorResponse>(payload, message_header);
-        Error error(decoder);
-        print_json(websocket_meta, error);
-        return 1;
-    }
 
-    if (!websocket_meta) {
-        const auto schema_id = message_header.schemaId();
-        if (schema_id != ExchangeInfoResponse::sbeSchemaId()) {
-            fprintf(stderr, "Unexpected schema ID %d\n", schema_id);
+        if (template_id == ErrorResponse::sbeTemplateId()) {
+            const auto result = decode_error_response(payload, message_header);
+            print_json(websocket_meta, result);
             return 1;
         }
-        const auto version = message_header.version();
-        if (version != ExchangeInfoResponse::sbeSchemaVersion()) {
-            fprintf(stderr, "Warning: Unexpected version %d\n", version);
-            // Schemas with the same ID are expected to be backwards compatible.
-        }
     }
+
     if (template_id == AccountResponse::sbeTemplateId()) {
         const auto result = decode_account(payload, message_header);
         print_json(websocket_meta, result);
