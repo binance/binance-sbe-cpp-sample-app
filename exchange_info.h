@@ -114,7 +114,7 @@ ExchangeFilter make_exchange_filter(const MessageHeader& header, const std::span
                                   ExchangeMaxNumIcebergOrders{msg.maxNumIcebergOrders()}};
         }
         default: {
-            fprintf(stderr, "Unexpected template ID %d\n", header.templateId());
+            fprintf(stderr, "Unexpected exchange filter template ID %d\n", header.templateId());
             exit(1);
         }
     }
@@ -385,7 +385,7 @@ SymbolFilter make_symbol_filter(const MessageHeader& header, const std::span<cha
             return SymbolFilter{filter_type, SymbolTPlusSellFilter{msg}};
         }
         default: {
-            fprintf(stderr, "Unexpected template ID %d\n", header.templateId());
+            fprintf(stderr, "Unexpected symbol filter template ID %d\n", header.templateId());
             exit(1);
         }
     }
