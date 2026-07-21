@@ -207,7 +207,7 @@ public:
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t sbeSchemaVersion() SBE_NOEXCEPT
     {
-        return static_cast<std::uint16_t>(1);
+        return static_cast<std::uint16_t>(4);
     }
 
     AllowedSelfTradePreventionModes &clear()
@@ -367,6 +367,32 @@ public:
         return *this;
     }
 
+    static bool transfer(const std::uint8_t bits)
+    {
+        return (bits & (static_cast<std::uint8_t>(1) << 5u)) != 0;
+    }
+
+    static std::uint8_t transfer(const std::uint8_t bits, const bool value)
+    {
+        return value ? static_cast<std::uint8_t>(bits | (static_cast<std::uint8_t>(1) << 5u)) : static_cast<std::uint8_t>(bits & ~(static_cast<std::uint8_t>(1) << 5u));
+    }
+
+    SBE_NODISCARD bool transfer() const
+    {
+        std::uint8_t val;
+        std::memcpy(&val, m_buffer + m_offset, sizeof(std::uint8_t));
+        return ((val) & (static_cast<std::uint8_t>(1) << 5u)) != 0;
+    }
+
+    AllowedSelfTradePreventionModes &transfer(const bool value)
+    {
+        std::uint8_t bits;
+        std::memcpy(&bits, m_buffer + m_offset, sizeof(std::uint8_t));
+        bits = (value ? static_cast<std::uint8_t>((bits) | (static_cast<std::uint8_t>(1) << 5u)) : static_cast<std::uint8_t>((bits) & ~(static_cast<std::uint8_t>(1) << 5u)));
+        std::memcpy(m_buffer + m_offset, &bits, sizeof(std::uint8_t));
+        return *this;
+    }
+
     static bool nonRepresentable(const std::uint8_t bits)
     {
         return (bits & (static_cast<std::uint8_t>(1) << 7u)) != 0;
@@ -438,6 +464,15 @@ public:
                 builder << ",";
             }
             builder << R"("decrement")";
+            atLeastOne = true;
+        }
+        if (writer.transfer())
+        {
+            if (atLeastOne)
+            {
+                builder << ",";
+            }
+            builder << R"("transfer")";
             atLeastOne = true;
         }
         if (writer.nonRepresentable())

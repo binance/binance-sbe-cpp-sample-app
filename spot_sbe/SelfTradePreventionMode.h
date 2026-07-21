@@ -35,6 +35,7 @@ public:
         ExpireMaker = static_cast<std::uint8_t>(3),
         ExpireBoth = static_cast<std::uint8_t>(4),
         Decrement = static_cast<std::uint8_t>(5),
+        Transfer = static_cast<std::uint8_t>(6),
         NonRepresentable = static_cast<std::uint8_t>(254),
         NULL_VALUE = static_cast<std::uint8_t>(255)
     };
@@ -48,6 +49,7 @@ public:
             case static_cast<std::uint8_t>(3): return ExpireMaker;
             case static_cast<std::uint8_t>(4): return ExpireBoth;
             case static_cast<std::uint8_t>(5): return Decrement;
+            case static_cast<std::uint8_t>(6): return Transfer;
             case static_cast<std::uint8_t>(254): return NonRepresentable;
             case static_cast<std::uint8_t>(255): return NULL_VALUE;
         }
@@ -64,6 +66,7 @@ public:
             case ExpireMaker: return "ExpireMaker";
             case ExpireBoth: return "ExpireBoth";
             case Decrement: return "Decrement";
+            case Transfer: return "Transfer";
             case NonRepresentable: return "NonRepresentable";
             case NULL_VALUE: return "NULL_VALUE";
         }

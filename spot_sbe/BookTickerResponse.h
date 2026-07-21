@@ -90,12 +90,15 @@
 #define SBE_NULLVALUE_UINT64 (std::numeric_limits<std::uint64_t>::max)()
 
 
+#include "CounterPartyRole.h"
+#include "CalculationType.h"
 #include "OrderType.h"
 #include "VarString.h"
 #include "MatchType.h"
 #include "ExecutionType.h"
 #include "BoolEnum.h"
 #include "OrderStatus.h"
+#include "ExecutionRuleType.h"
 #include "GroupSizeEncoding.h"
 #include "PegPriceType.h"
 #include "GroupSize16Encoding.h"
@@ -107,9 +110,13 @@
 #include "Floor.h"
 #include "TimeInForce.h"
 #include "ListStatusType.h"
+#include "AllocationStatus.h"
 #include "AllowedSelfTradePreventionModes.h"
 #include "MessageHeader.h"
+#include "AllocationReportType.h"
 #include "AccountType.h"
+#include "ExpiryReason.h"
+#include "AllocationTransactionType.h"
 #include "OptionalMessageData16.h"
 #include "OrderCapacity.h"
 #include "AllocationType.h"
@@ -148,7 +155,7 @@ public:
     static constexpr std::uint16_t SBE_BLOCK_LENGTH = static_cast<std::uint16_t>(0);
     static constexpr std::uint16_t SBE_TEMPLATE_ID = static_cast<std::uint16_t>(212);
     static constexpr std::uint16_t SBE_SCHEMA_ID = static_cast<std::uint16_t>(3);
-    static constexpr std::uint16_t SBE_SCHEMA_VERSION = static_cast<std::uint16_t>(1);
+    static constexpr std::uint16_t SBE_SCHEMA_VERSION = static_cast<std::uint16_t>(4);
     static constexpr const char* SBE_SEMANTIC_VERSION = "5.2";
 
     enum MetaAttribute
@@ -223,7 +230,7 @@ public:
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t sbeSchemaVersion() SBE_NOEXCEPT
     {
-        return static_cast<std::uint16_t>(1);
+        return static_cast<std::uint16_t>(4);
     }
 
     SBE_NODISCARD static const char *sbeSemanticVersion() SBE_NOEXCEPT
