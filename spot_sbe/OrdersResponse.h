@@ -90,12 +90,15 @@
 #define SBE_NULLVALUE_UINT64 (std::numeric_limits<std::uint64_t>::max)()
 
 
+#include "CounterPartyRole.h"
+#include "CalculationType.h"
 #include "OrderType.h"
 #include "VarString.h"
 #include "MatchType.h"
 #include "ExecutionType.h"
 #include "BoolEnum.h"
 #include "OrderStatus.h"
+#include "ExecutionRuleType.h"
 #include "GroupSizeEncoding.h"
 #include "PegPriceType.h"
 #include "GroupSize16Encoding.h"
@@ -107,9 +110,13 @@
 #include "Floor.h"
 #include "TimeInForce.h"
 #include "ListStatusType.h"
+#include "AllocationStatus.h"
 #include "AllowedSelfTradePreventionModes.h"
 #include "MessageHeader.h"
+#include "AllocationReportType.h"
 #include "AccountType.h"
+#include "ExpiryReason.h"
+#include "AllocationTransactionType.h"
 #include "OptionalMessageData16.h"
 #include "OrderCapacity.h"
 #include "AllocationType.h"
@@ -148,7 +155,7 @@ public:
     static constexpr std::uint16_t SBE_BLOCK_LENGTH = static_cast<std::uint16_t>(0);
     static constexpr std::uint16_t SBE_TEMPLATE_ID = static_cast<std::uint16_t>(308);
     static constexpr std::uint16_t SBE_SCHEMA_ID = static_cast<std::uint16_t>(3);
-    static constexpr std::uint16_t SBE_SCHEMA_VERSION = static_cast<std::uint16_t>(1);
+    static constexpr std::uint16_t SBE_SCHEMA_VERSION = static_cast<std::uint16_t>(4);
     static constexpr const char* SBE_SEMANTIC_VERSION = "5.2";
 
     enum MetaAttribute
@@ -223,7 +230,7 @@ public:
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t sbeSchemaVersion() SBE_NOEXCEPT
     {
-        return static_cast<std::uint16_t>(1);
+        return static_cast<std::uint16_t>(4);
     }
 
     SBE_NODISCARD static const char *sbeSemanticVersion() SBE_NOEXCEPT
@@ -404,11 +411,11 @@ public:
             m_buffer = buffer;
             m_bufferLength = bufferLength;
             GroupSizeEncoding dimensions(buffer, *pos, bufferLength, actingVersion);
-            dimensions.blockLength(static_cast<std::uint16_t>(162));
+            dimensions.blockLength(static_cast<std::uint16_t>(163));
             dimensions.numInGroup(static_cast<std::uint32_t>(count));
             m_index = 0;
             m_count = count;
-            m_blockLength = 162;
+            m_blockLength = 163;
             m_actingVersion = actingVersion;
             m_initialPosition = *pos;
             m_positionPtr = pos;
@@ -422,7 +429,7 @@ public:
 
         static SBE_CONSTEXPR std::uint64_t sbeBlockLength() SBE_NOEXCEPT
         {
-            return 162;
+            return 163;
         }
 
         SBE_NODISCARD std::uint64_t sbeActingBlockLength() SBE_NOEXCEPT
@@ -2516,6 +2523,71 @@ public:
             return *this;
         }
 
+        SBE_NODISCARD static const char *expiryReasonMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+        {
+            switch (metaAttribute)
+            {
+                case MetaAttribute::PRESENCE: return "optional";
+                default: return "";
+            }
+        }
+
+        static SBE_CONSTEXPR std::uint16_t expiryReasonId() SBE_NOEXCEPT
+        {
+            return 34;
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t expiryReasonSinceVersion() SBE_NOEXCEPT
+        {
+            return 4;
+        }
+
+        SBE_NODISCARD bool expiryReasonInActingVersion() SBE_NOEXCEPT
+        {
+            return m_actingVersion >= expiryReasonSinceVersion();
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::size_t expiryReasonEncodingOffset() SBE_NOEXCEPT
+        {
+            return 162;
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::size_t expiryReasonEncodingLength() SBE_NOEXCEPT
+        {
+            return 1;
+        }
+
+        SBE_NODISCARD std::uint8_t expiryReasonRaw() const SBE_NOEXCEPT
+        {
+            if (m_actingVersion < 4)
+            {
+                return static_cast<std::uint8_t>(255);
+            }
+
+            std::uint8_t val;
+            std::memcpy(&val, m_buffer + m_offset + 162, sizeof(std::uint8_t));
+            return (val);
+        }
+
+        SBE_NODISCARD ExpiryReason::Value expiryReason() const
+        {
+            if (m_actingVersion < 4)
+            {
+                return ExpiryReason::NULL_VALUE;
+            }
+
+            std::uint8_t val;
+            std::memcpy(&val, m_buffer + m_offset + 162, sizeof(std::uint8_t));
+            return ExpiryReason::get((val));
+        }
+
+        Orders &expiryReason(const ExpiryReason::Value value) SBE_NOEXCEPT
+        {
+            std::uint8_t val = (value);
+            std::memcpy(m_buffer + m_offset + 162, &val, sizeof(std::uint8_t));
+            return *this;
+        }
+
         SBE_NODISCARD static const char *symbolMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
         {
             switch (metaAttribute)
@@ -3001,6 +3073,10 @@ public:
             builder << ", ";
             builder << R"("peggedPrice": )";
             builder << +writer.peggedPrice();
+
+            builder << ", ";
+            builder << R"("expiryReason": )";
+            builder << '"' << writer.expiryReason() << '"';
 
             builder << ", ";
             builder << R"("symbol": )";
