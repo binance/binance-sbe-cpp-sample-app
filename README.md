@@ -32,7 +32,7 @@ c++ -std=c++20 -Wextra -Wall -o sbe-sample-app ./main.cpp
 The following command fetches the `exchangeInfo` SBE response from the REST API and has `sbe-sample-app` decode it and output it as JSON to STDOUT:
 
 ```shell
-curl -X GET -H 'Accept: application/sbe' -H 'X-MBX-SBE: 3:1' \
+curl -X GET -H 'Accept: application/sbe' -H 'X-MBX-SBE: 3:5' \
     'https://api.binance.com/api/v3/exchangeInfo' \
     | ./sbe-sample-app
 ```
@@ -50,7 +50,7 @@ hmac_api_key="<your_api_key>"; \
     query="timestamp=$(date +%s000)"; \
     signature=$(echo -n "${query}" | openssl dgst -sha256 -hmac "${hmac_secret_key}"); \
     signature=${signature#*= }; \
-    curl -X GET -H "X-MBX-APIKEY: ${hmac_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:1" \
+    curl -X GET -H "X-MBX-APIKEY: ${hmac_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:5" \
     "${url_without_query}?${query}&signature=${signature}" \
     | ./sbe-sample-app
 ```
@@ -64,7 +64,7 @@ rsa_api_key="<your_api_key>"; \
     query="timestamp=$(date +%s000)"; \
     signature=$(echo -n "${query}" | openssl dgst -sha256 -sign "${rsa_secret_path}" | openssl enc -base64 -A); \
     signature=${signature#*= }; \
-    curl -X GET -H "X-MBX-APIKEY: ${rsa_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:1" \
+    curl -X GET -H "X-MBX-APIKEY: ${rsa_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:5" \
     "${url_without_query}?${query}&signature=${signature}" \
     | ./sbe-sample-app
 ```
@@ -79,7 +79,7 @@ ed25519_api_key="<your_api_key>"; \
     echo -n "${query}" > to_be_signed.txt; \
     signature=$(openssl pkeyutl -sign -inkey "${ed25519_secret_path}" -rawin -in to_be_signed.txt | openssl enc -base64 -A); \
     signature=${signature#*= }; \
-    curl -X GET -H "X-MBX-APIKEY: ${ed25519_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:1" \
+    curl -X GET -H "X-MBX-APIKEY: ${ed25519_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:5" \
     "${url_without_query}?${query}&signature=${signature}" \
     | ./sbe-sample-app
 ```
@@ -97,7 +97,7 @@ hmac_api_key="<your_api_key>"; \
     query="symbol=BNBUSDT&side=BUY&type=LIMIT&timeInForce=GTC&quantity=1&price=250&newOrderRespType=RESULT&timestamp=$(date +%s000)"; \
     signature=$(echo -n "${query}" | openssl dgst -sha256 -hmac "${hmac_secret_key}"); \
     signature=${signature#*= }; \
-    curl -X POST -H "X-MBX-APIKEY: ${hmac_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:1" \
+    curl -X POST -H "X-MBX-APIKEY: ${hmac_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:5" \
     "${url_without_query}?${query}&signature=${signature}" \
     | ./sbe-sample-app
 ```
@@ -111,7 +111,7 @@ rsa_api_key="<your_api_key>"; \
     query="symbol=BNBUSDT&side=BUY&type=LIMIT&timeInForce=GTC&quantity=1&price=250&newOrderRespType=RESULT&timestamp=$(date +%s000)"; \
     signature=$(echo -n "${query}" | openssl dgst -sha256 -sign "${rsa_secret_path}" | openssl enc -base64 -A); \
     signature=${signature#*= }; \
-    curl -X POST -H "X-MBX-APIKEY: ${rsa_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:1" \
+    curl -X POST -H "X-MBX-APIKEY: ${rsa_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:5" \
     "${url_without_query}?${query}&signature=${signature}" \
     | ./sbe-sample-app
 ```
@@ -126,7 +126,7 @@ ed25519_api_key="<your_api_key>"; \
     echo -n "${query}" > to_be_signed.txt; \
     signature=$(openssl pkeyutl -sign -inkey "${ed25519_secret_path}" -rawin -in to_be_signed.txt | openssl enc -base64 -A); \
     signature=${signature#*= }; \
-    curl -X POST -H "X-MBX-APIKEY: ${ed25519_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:1" \
+    curl -X POST -H "X-MBX-APIKEY: ${ed25519_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:5" \
     "${url_without_query}?${query}&signature=${signature}" \
     | ./sbe-sample-app
 ```
@@ -145,7 +145,7 @@ hmac_api_key="<your_api_key>"; \
     query="symbol=BNBUSDT&orderId=${order_id}&timestamp=$(date +%s000)"; \
     signature=$(echo -n "${query}" | openssl dgst -sha256 -hmac "${hmac_secret_key}"); \
     signature=${signature#*= }; \
-    curl -X GET -H "X-MBX-APIKEY: ${hmac_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:1" \
+    curl -X GET -H "X-MBX-APIKEY: ${hmac_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:5" \
     "${url_without_query}?${query}&signature=${signature}" \
     | ./sbe-sample-app
 ```
@@ -160,7 +160,7 @@ rsa_api_key="<your_api_key>"; \
     query="symbol=BNBUSDT&orderId=${order_id}&timestamp=$(date +%s000)"; \
     signature=$(echo -n "${query}" | openssl dgst -sha256 -sign "${rsa_secret_path}" | openssl enc -base64 -A); \
     signature=${signature#*= }; \
-    curl -X GET -H "X-MBX-APIKEY: ${rsa_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:1" \
+    curl -X GET -H "X-MBX-APIKEY: ${rsa_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:5" \
     "${url_without_query}?${query}&signature=${signature}" \
     | ./sbe-sample-app
 ```
@@ -176,7 +176,7 @@ ed25519_api_key="<your_api_key>"; \
     echo -n "${query}" > to_be_signed.txt; \
     signature=$(openssl pkeyutl -sign -inkey "${ed25519_secret_path}" -rawin -in to_be_signed.txt | openssl enc -base64 -A); \
     signature=${signature#*= }; \
-    curl -X GET -H "X-MBX-APIKEY: ${ed25519_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:1" \
+    curl -X GET -H "X-MBX-APIKEY: ${ed25519_api_key}" -H "Accept: application/sbe" -H "X-MBX-SBE: 3:5" \
     "${url_without_query}?${query}&signature=${signature}" \
     | ./sbe-sample-app
 ```
@@ -187,7 +187,7 @@ The following command fetches the `exchangeInfo` SBE response from the WebSocket
 
 ```shell
 echo '{"id":"93fb61ef-89f8-4d6e-b022-4f035a3fadad","method":"exchangeInfo","params":{"symbol":"BTCUSDT"}}' \
-    | ./tools/websocket_send.py  'wss://ws-api.binance.com:443/ws-api/v3?responseFormat=sbe&sbeSchemaId=3&sbeSchemaVersion=1' \
+    | ./tools/websocket_send.py  'wss://ws-api.binance.com:443/ws-api/v3?responseFormat=sbe&sbeSchemaId=3&sbeSchemaVersion=5' \
     | ./sbe-sample-app
 ```
 

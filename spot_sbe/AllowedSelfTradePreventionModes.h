@@ -207,7 +207,7 @@ public:
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t sbeSchemaVersion() SBE_NOEXCEPT
     {
-        return static_cast<std::uint16_t>(4);
+        return static_cast<std::uint16_t>(5);
     }
 
     AllowedSelfTradePreventionModes &clear()

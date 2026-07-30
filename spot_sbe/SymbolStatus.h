@@ -34,6 +34,7 @@ public:
         EndOfDay = static_cast<std::uint8_t>(1),
         Halt = static_cast<std::uint8_t>(2),
         Break = static_cast<std::uint8_t>(3),
+        CancelOnly = static_cast<std::uint8_t>(4),
         NonRepresentable = static_cast<std::uint8_t>(254),
         NULL_VALUE = static_cast<std::uint8_t>(255)
     };
@@ -46,6 +47,7 @@ public:
             case static_cast<std::uint8_t>(1): return EndOfDay;
             case static_cast<std::uint8_t>(2): return Halt;
             case static_cast<std::uint8_t>(3): return Break;
+            case static_cast<std::uint8_t>(4): return CancelOnly;
             case static_cast<std::uint8_t>(254): return NonRepresentable;
             case static_cast<std::uint8_t>(255): return NULL_VALUE;
         }
@@ -61,6 +63,7 @@ public:
             case EndOfDay: return "EndOfDay";
             case Halt: return "Halt";
             case Break: return "Break";
+            case CancelOnly: return "CancelOnly";
             case NonRepresentable: return "NonRepresentable";
             case NULL_VALUE: return "NULL_VALUE";
         }
