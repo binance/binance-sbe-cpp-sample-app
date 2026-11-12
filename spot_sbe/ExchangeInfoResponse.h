@@ -155,7 +155,7 @@ public:
     static constexpr std::uint16_t SBE_BLOCK_LENGTH = static_cast<std::uint16_t>(0);
     static constexpr std::uint16_t SBE_TEMPLATE_ID = static_cast<std::uint16_t>(103);
     static constexpr std::uint16_t SBE_SCHEMA_ID = static_cast<std::uint16_t>(3);
-    static constexpr std::uint16_t SBE_SCHEMA_VERSION = static_cast<std::uint16_t>(5);
+    static constexpr std::uint16_t SBE_SCHEMA_VERSION = static_cast<std::uint16_t>(6);
     static constexpr const char* SBE_SEMANTIC_VERSION = "5.2";
 
     enum MetaAttribute
@@ -230,7 +230,7 @@ public:
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t sbeSchemaVersion() SBE_NOEXCEPT
     {
-        return static_cast<std::uint16_t>(5);
+        return static_cast<std::uint16_t>(6);
     }
 
     SBE_NODISCARD static const char *sbeSemanticVersion() SBE_NOEXCEPT
@@ -1280,11 +1280,11 @@ public:
             m_buffer = buffer;
             m_bufferLength = bufferLength;
             GroupSizeEncoding dimensions(buffer, *pos, bufferLength, actingVersion);
-            dimensions.blockLength(static_cast<std::uint16_t>(19));
+            dimensions.blockLength(static_cast<std::uint16_t>(22));
             dimensions.numInGroup(static_cast<std::uint32_t>(count));
             m_index = 0;
             m_count = count;
-            m_blockLength = 19;
+            m_blockLength = 22;
             m_actingVersion = actingVersion;
             m_initialPosition = *pos;
             m_positionPtr = pos;
@@ -1298,7 +1298,7 @@ public:
 
         static SBE_CONSTEXPR std::uint64_t sbeBlockLength() SBE_NOEXCEPT
         {
-            return 19;
+            return 22;
         }
 
         SBE_NODISCARD std::uint64_t sbeActingBlockLength() SBE_NOEXCEPT
@@ -2378,6 +2378,201 @@ public:
         {
             std::uint8_t val = (value);
             std::memcpy(m_buffer + m_offset + 18, &val, sizeof(std::uint8_t));
+            return *this;
+        }
+
+        SBE_NODISCARD static const char *opoAllowedMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+        {
+            switch (metaAttribute)
+            {
+                case MetaAttribute::PRESENCE: return "optional";
+                default: return "";
+            }
+        }
+
+        static SBE_CONSTEXPR std::uint16_t opoAllowedId() SBE_NOEXCEPT
+        {
+            return 19;
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t opoAllowedSinceVersion() SBE_NOEXCEPT
+        {
+            return 6;
+        }
+
+        SBE_NODISCARD bool opoAllowedInActingVersion() SBE_NOEXCEPT
+        {
+            return m_actingVersion >= opoAllowedSinceVersion();
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::size_t opoAllowedEncodingOffset() SBE_NOEXCEPT
+        {
+            return 19;
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::size_t opoAllowedEncodingLength() SBE_NOEXCEPT
+        {
+            return 1;
+        }
+
+        SBE_NODISCARD std::uint8_t opoAllowedRaw() const SBE_NOEXCEPT
+        {
+            if (m_actingVersion < 6)
+            {
+                return static_cast<std::uint8_t>(255);
+            }
+
+            std::uint8_t val;
+            std::memcpy(&val, m_buffer + m_offset + 19, sizeof(std::uint8_t));
+            return (val);
+        }
+
+        SBE_NODISCARD BoolEnum::Value opoAllowed() const
+        {
+            if (m_actingVersion < 6)
+            {
+                return BoolEnum::NULL_VALUE;
+            }
+
+            std::uint8_t val;
+            std::memcpy(&val, m_buffer + m_offset + 19, sizeof(std::uint8_t));
+            return BoolEnum::get((val));
+        }
+
+        Symbols &opoAllowed(const BoolEnum::Value value) SBE_NOEXCEPT
+        {
+            std::uint8_t val = (value);
+            std::memcpy(m_buffer + m_offset + 19, &val, sizeof(std::uint8_t));
+            return *this;
+        }
+
+        SBE_NODISCARD static const char *marketQuoteNotionalLimitAllowedMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+        {
+            switch (metaAttribute)
+            {
+                case MetaAttribute::PRESENCE: return "optional";
+                default: return "";
+            }
+        }
+
+        static SBE_CONSTEXPR std::uint16_t marketQuoteNotionalLimitAllowedId() SBE_NOEXCEPT
+        {
+            return 20;
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t marketQuoteNotionalLimitAllowedSinceVersion() SBE_NOEXCEPT
+        {
+            return 6;
+        }
+
+        SBE_NODISCARD bool marketQuoteNotionalLimitAllowedInActingVersion() SBE_NOEXCEPT
+        {
+            return m_actingVersion >= marketQuoteNotionalLimitAllowedSinceVersion();
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::size_t marketQuoteNotionalLimitAllowedEncodingOffset() SBE_NOEXCEPT
+        {
+            return 20;
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::size_t marketQuoteNotionalLimitAllowedEncodingLength() SBE_NOEXCEPT
+        {
+            return 1;
+        }
+
+        SBE_NODISCARD std::uint8_t marketQuoteNotionalLimitAllowedRaw() const SBE_NOEXCEPT
+        {
+            if (m_actingVersion < 6)
+            {
+                return static_cast<std::uint8_t>(255);
+            }
+
+            std::uint8_t val;
+            std::memcpy(&val, m_buffer + m_offset + 20, sizeof(std::uint8_t));
+            return (val);
+        }
+
+        SBE_NODISCARD BoolEnum::Value marketQuoteNotionalLimitAllowed() const
+        {
+            if (m_actingVersion < 6)
+            {
+                return BoolEnum::NULL_VALUE;
+            }
+
+            std::uint8_t val;
+            std::memcpy(&val, m_buffer + m_offset + 20, sizeof(std::uint8_t));
+            return BoolEnum::get((val));
+        }
+
+        Symbols &marketQuoteNotionalLimitAllowed(const BoolEnum::Value value) SBE_NOEXCEPT
+        {
+            std::uint8_t val = (value);
+            std::memcpy(m_buffer + m_offset + 20, &val, sizeof(std::uint8_t));
+            return *this;
+        }
+
+        SBE_NODISCARD static const char *limitQuoteNotionalLimitAllowedMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+        {
+            switch (metaAttribute)
+            {
+                case MetaAttribute::PRESENCE: return "optional";
+                default: return "";
+            }
+        }
+
+        static SBE_CONSTEXPR std::uint16_t limitQuoteNotionalLimitAllowedId() SBE_NOEXCEPT
+        {
+            return 21;
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t limitQuoteNotionalLimitAllowedSinceVersion() SBE_NOEXCEPT
+        {
+            return 6;
+        }
+
+        SBE_NODISCARD bool limitQuoteNotionalLimitAllowedInActingVersion() SBE_NOEXCEPT
+        {
+            return m_actingVersion >= limitQuoteNotionalLimitAllowedSinceVersion();
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::size_t limitQuoteNotionalLimitAllowedEncodingOffset() SBE_NOEXCEPT
+        {
+            return 21;
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::size_t limitQuoteNotionalLimitAllowedEncodingLength() SBE_NOEXCEPT
+        {
+            return 1;
+        }
+
+        SBE_NODISCARD std::uint8_t limitQuoteNotionalLimitAllowedRaw() const SBE_NOEXCEPT
+        {
+            if (m_actingVersion < 6)
+            {
+                return static_cast<std::uint8_t>(255);
+            }
+
+            std::uint8_t val;
+            std::memcpy(&val, m_buffer + m_offset + 21, sizeof(std::uint8_t));
+            return (val);
+        }
+
+        SBE_NODISCARD BoolEnum::Value limitQuoteNotionalLimitAllowed() const
+        {
+            if (m_actingVersion < 6)
+            {
+                return BoolEnum::NULL_VALUE;
+            }
+
+            std::uint8_t val;
+            std::memcpy(&val, m_buffer + m_offset + 21, sizeof(std::uint8_t));
+            return BoolEnum::get((val));
+        }
+
+        Symbols &limitQuoteNotionalLimitAllowed(const BoolEnum::Value value) SBE_NOEXCEPT
+        {
+            std::uint8_t val = (value);
+            std::memcpy(m_buffer + m_offset + 21, &val, sizeof(std::uint8_t));
             return *this;
         }
 
@@ -4038,6 +4233,18 @@ public:
             builder << ", ";
             builder << R"("pegInstructionsAllowed": )";
             builder << '"' << writer.pegInstructionsAllowed() << '"';
+
+            builder << ", ";
+            builder << R"("opoAllowed": )";
+            builder << '"' << writer.opoAllowed() << '"';
+
+            builder << ", ";
+            builder << R"("marketQuoteNotionalLimitAllowed": )";
+            builder << '"' << writer.marketQuoteNotionalLimitAllowed() << '"';
+
+            builder << ", ";
+            builder << R"("limitQuoteNotionalLimitAllowed": )";
+            builder << '"' << writer.limitQuoteNotionalLimitAllowed() << '"';
 
             builder << ", ";
             {

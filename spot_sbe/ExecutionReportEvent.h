@@ -152,10 +152,10 @@ private:
     }
 
 public:
-    static constexpr std::uint16_t SBE_BLOCK_LENGTH = static_cast<std::uint16_t>(282);
+    static constexpr std::uint16_t SBE_BLOCK_LENGTH = static_cast<std::uint16_t>(291);
     static constexpr std::uint16_t SBE_TEMPLATE_ID = static_cast<std::uint16_t>(603);
     static constexpr std::uint16_t SBE_SCHEMA_ID = static_cast<std::uint16_t>(3);
-    static constexpr std::uint16_t SBE_SCHEMA_VERSION = static_cast<std::uint16_t>(5);
+    static constexpr std::uint16_t SBE_SCHEMA_VERSION = static_cast<std::uint16_t>(6);
     static constexpr const char* SBE_SEMANTIC_VERSION = "5.2";
 
     enum MetaAttribute
@@ -210,7 +210,7 @@ public:
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t sbeBlockLength() SBE_NOEXCEPT
     {
-        return static_cast<std::uint16_t>(282);
+        return static_cast<std::uint16_t>(291);
     }
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t sbeBlockAndHeaderLength() SBE_NOEXCEPT
@@ -230,7 +230,7 @@ public:
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t sbeSchemaVersion() SBE_NOEXCEPT
     {
-        return static_cast<std::uint16_t>(5);
+        return static_cast<std::uint16_t>(6);
     }
 
     SBE_NODISCARD static const char *sbeSemanticVersion() SBE_NOEXCEPT
@@ -3670,6 +3670,139 @@ public:
         return *this;
     }
 
+    SBE_NODISCARD static const char *quoteNotionalLimitMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::PRESENCE: return "optional";
+            default: return "";
+        }
+    }
+
+    static SBE_CONSTEXPR std::uint16_t quoteNotionalLimitId() SBE_NOEXCEPT
+    {
+        return 55;
+    }
+
+    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t quoteNotionalLimitSinceVersion() SBE_NOEXCEPT
+    {
+        return 6;
+    }
+
+    SBE_NODISCARD bool quoteNotionalLimitInActingVersion() SBE_NOEXCEPT
+    {
+        return m_actingVersion >= quoteNotionalLimitSinceVersion();
+    }
+
+    SBE_NODISCARD static SBE_CONSTEXPR std::size_t quoteNotionalLimitEncodingOffset() SBE_NOEXCEPT
+    {
+        return 282;
+    }
+
+    static SBE_CONSTEXPR std::int64_t quoteNotionalLimitNullValue() SBE_NOEXCEPT
+    {
+        return SBE_NULLVALUE_INT64;
+    }
+
+    static SBE_CONSTEXPR std::int64_t quoteNotionalLimitMinValue() SBE_NOEXCEPT
+    {
+        return INT64_C(-9223372036854775807);
+    }
+
+    static SBE_CONSTEXPR std::int64_t quoteNotionalLimitMaxValue() SBE_NOEXCEPT
+    {
+        return INT64_C(9223372036854775807);
+    }
+
+    static SBE_CONSTEXPR std::size_t quoteNotionalLimitEncodingLength() SBE_NOEXCEPT
+    {
+        return 8;
+    }
+
+    SBE_NODISCARD std::int64_t quoteNotionalLimit() const SBE_NOEXCEPT
+    {
+        if (m_actingVersion < 6)
+        {
+            return INT64_MIN;
+        }
+
+        std::int64_t val;
+        std::memcpy(&val, m_buffer + m_offset + 282, sizeof(std::int64_t));
+        return SBE_LITTLE_ENDIAN_ENCODE_64(val);
+    }
+
+    ExecutionReportEvent &quoteNotionalLimit(const std::int64_t value) SBE_NOEXCEPT
+    {
+        std::int64_t val = SBE_LITTLE_ENDIAN_ENCODE_64(value);
+        std::memcpy(m_buffer + m_offset + 282, &val, sizeof(std::int64_t));
+        return *this;
+    }
+
+    SBE_NODISCARD static const char *effectiveSelfTradePreventionModeMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::PRESENCE: return "optional";
+            default: return "";
+        }
+    }
+
+    static SBE_CONSTEXPR std::uint16_t effectiveSelfTradePreventionModeId() SBE_NOEXCEPT
+    {
+        return 56;
+    }
+
+    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t effectiveSelfTradePreventionModeSinceVersion() SBE_NOEXCEPT
+    {
+        return 6;
+    }
+
+    SBE_NODISCARD bool effectiveSelfTradePreventionModeInActingVersion() SBE_NOEXCEPT
+    {
+        return m_actingVersion >= effectiveSelfTradePreventionModeSinceVersion();
+    }
+
+    SBE_NODISCARD static SBE_CONSTEXPR std::size_t effectiveSelfTradePreventionModeEncodingOffset() SBE_NOEXCEPT
+    {
+        return 290;
+    }
+
+    SBE_NODISCARD static SBE_CONSTEXPR std::size_t effectiveSelfTradePreventionModeEncodingLength() SBE_NOEXCEPT
+    {
+        return 1;
+    }
+
+    SBE_NODISCARD std::uint8_t effectiveSelfTradePreventionModeRaw() const SBE_NOEXCEPT
+    {
+        if (m_actingVersion < 6)
+        {
+            return static_cast<std::uint8_t>(255);
+        }
+
+        std::uint8_t val;
+        std::memcpy(&val, m_buffer + m_offset + 290, sizeof(std::uint8_t));
+        return (val);
+    }
+
+    SBE_NODISCARD SelfTradePreventionMode::Value effectiveSelfTradePreventionMode() const
+    {
+        if (m_actingVersion < 6)
+        {
+            return SelfTradePreventionMode::NULL_VALUE;
+        }
+
+        std::uint8_t val;
+        std::memcpy(&val, m_buffer + m_offset + 290, sizeof(std::uint8_t));
+        return SelfTradePreventionMode::get((val));
+    }
+
+    ExecutionReportEvent &effectiveSelfTradePreventionMode(const SelfTradePreventionMode::Value value) SBE_NOEXCEPT
+    {
+        std::uint8_t val = (value);
+        std::memcpy(m_buffer + m_offset + 290, &val, sizeof(std::uint8_t));
+        return *this;
+    }
+
     SBE_NODISCARD static const char *symbolMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
     {
         switch (metaAttribute)
@@ -4951,6 +5084,14 @@ friend std::basic_ostream<CharT, Traits> & operator << (
     builder << ", ";
     builder << R"("expiryReason": )";
     builder << '"' << writer.expiryReason() << '"';
+
+    builder << ", ";
+    builder << R"("quoteNotionalLimit": )";
+    builder << +writer.quoteNotionalLimit();
+
+    builder << ", ";
+    builder << R"("effectiveSelfTradePreventionMode": )";
+    builder << '"' << writer.effectiveSelfTradePreventionMode() << '"';
 
     builder << ", ";
     builder << R"("symbol": )";

@@ -152,10 +152,10 @@ private:
     }
 
 public:
-    static constexpr std::uint16_t SBE_BLOCK_LENGTH = static_cast<std::uint16_t>(145);
+    static constexpr std::uint16_t SBE_BLOCK_LENGTH = static_cast<std::uint16_t>(153);
     static constexpr std::uint16_t SBE_TEMPLATE_ID = static_cast<std::uint16_t>(317);
     static constexpr std::uint16_t SBE_SCHEMA_ID = static_cast<std::uint16_t>(3);
-    static constexpr std::uint16_t SBE_SCHEMA_VERSION = static_cast<std::uint16_t>(5);
+    static constexpr std::uint16_t SBE_SCHEMA_VERSION = static_cast<std::uint16_t>(6);
     static constexpr const char* SBE_SEMANTIC_VERSION = "5.2";
 
     enum MetaAttribute
@@ -210,7 +210,7 @@ public:
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t sbeBlockLength() SBE_NOEXCEPT
     {
-        return static_cast<std::uint16_t>(145);
+        return static_cast<std::uint16_t>(153);
     }
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t sbeBlockAndHeaderLength() SBE_NOEXCEPT
@@ -230,7 +230,7 @@ public:
 
     SBE_NODISCARD static SBE_CONSTEXPR std::uint16_t sbeSchemaVersion() SBE_NOEXCEPT
     {
-        return static_cast<std::uint16_t>(5);
+        return static_cast<std::uint16_t>(6);
     }
 
     SBE_NODISCARD static const char *sbeSemanticVersion() SBE_NOEXCEPT
@@ -2191,6 +2191,74 @@ public:
         return *this;
     }
 
+    SBE_NODISCARD static const char *quoteNotionalLimitMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+    {
+        switch (metaAttribute)
+        {
+            case MetaAttribute::PRESENCE: return "optional";
+            default: return "";
+        }
+    }
+
+    static SBE_CONSTEXPR std::uint16_t quoteNotionalLimitId() SBE_NOEXCEPT
+    {
+        return 31;
+    }
+
+    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t quoteNotionalLimitSinceVersion() SBE_NOEXCEPT
+    {
+        return 6;
+    }
+
+    SBE_NODISCARD bool quoteNotionalLimitInActingVersion() SBE_NOEXCEPT
+    {
+        return m_actingVersion >= quoteNotionalLimitSinceVersion();
+    }
+
+    SBE_NODISCARD static SBE_CONSTEXPR std::size_t quoteNotionalLimitEncodingOffset() SBE_NOEXCEPT
+    {
+        return 145;
+    }
+
+    static SBE_CONSTEXPR std::int64_t quoteNotionalLimitNullValue() SBE_NOEXCEPT
+    {
+        return SBE_NULLVALUE_INT64;
+    }
+
+    static SBE_CONSTEXPR std::int64_t quoteNotionalLimitMinValue() SBE_NOEXCEPT
+    {
+        return INT64_C(-9223372036854775807);
+    }
+
+    static SBE_CONSTEXPR std::int64_t quoteNotionalLimitMaxValue() SBE_NOEXCEPT
+    {
+        return INT64_C(9223372036854775807);
+    }
+
+    static SBE_CONSTEXPR std::size_t quoteNotionalLimitEncodingLength() SBE_NOEXCEPT
+    {
+        return 8;
+    }
+
+    SBE_NODISCARD std::int64_t quoteNotionalLimit() const SBE_NOEXCEPT
+    {
+        if (m_actingVersion < 6)
+        {
+            return INT64_MIN;
+        }
+
+        std::int64_t val;
+        std::memcpy(&val, m_buffer + m_offset + 145, sizeof(std::int64_t));
+        return SBE_LITTLE_ENDIAN_ENCODE_64(val);
+    }
+
+    OrderAmendKeepPriorityResponse &quoteNotionalLimit(const std::int64_t value) SBE_NOEXCEPT
+    {
+        std::int64_t val = SBE_LITTLE_ENDIAN_ENCODE_64(value);
+        std::memcpy(m_buffer + m_offset + 145, &val, sizeof(std::int64_t));
+        return *this;
+    }
+
     class ListStatus
     {
     private:
@@ -3729,11 +3797,11 @@ public:
             m_buffer = buffer;
             m_bufferLength = bufferLength;
             GroupSize16Encoding dimensions(buffer, *pos, bufferLength, actingVersion);
-            dimensions.blockLength(static_cast<std::uint16_t>(127));
+            dimensions.blockLength(static_cast<std::uint16_t>(135));
             dimensions.numInGroup(static_cast<std::uint16_t>(count));
             m_index = 0;
             m_count = count;
-            m_blockLength = 127;
+            m_blockLength = 135;
             m_actingVersion = actingVersion;
             m_initialPosition = *pos;
             m_positionPtr = pos;
@@ -3747,7 +3815,7 @@ public:
 
         static SBE_CONSTEXPR std::uint64_t sbeBlockLength() SBE_NOEXCEPT
         {
-            return 127;
+            return 135;
         }
 
         SBE_NODISCARD std::uint64_t sbeActingBlockLength() SBE_NOEXCEPT
@@ -5408,6 +5476,74 @@ public:
             return *this;
         }
 
+        SBE_NODISCARD static const char *quoteNotionalLimitMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
+        {
+            switch (metaAttribute)
+            {
+                case MetaAttribute::PRESENCE: return "optional";
+                default: return "";
+            }
+        }
+
+        static SBE_CONSTEXPR std::uint16_t quoteNotionalLimitId() SBE_NOEXCEPT
+        {
+            return 27;
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t quoteNotionalLimitSinceVersion() SBE_NOEXCEPT
+        {
+            return 6;
+        }
+
+        SBE_NODISCARD bool quoteNotionalLimitInActingVersion() SBE_NOEXCEPT
+        {
+            return m_actingVersion >= quoteNotionalLimitSinceVersion();
+        }
+
+        SBE_NODISCARD static SBE_CONSTEXPR std::size_t quoteNotionalLimitEncodingOffset() SBE_NOEXCEPT
+        {
+            return 127;
+        }
+
+        static SBE_CONSTEXPR std::int64_t quoteNotionalLimitNullValue() SBE_NOEXCEPT
+        {
+            return SBE_NULLVALUE_INT64;
+        }
+
+        static SBE_CONSTEXPR std::int64_t quoteNotionalLimitMinValue() SBE_NOEXCEPT
+        {
+            return INT64_C(-9223372036854775807);
+        }
+
+        static SBE_CONSTEXPR std::int64_t quoteNotionalLimitMaxValue() SBE_NOEXCEPT
+        {
+            return INT64_C(9223372036854775807);
+        }
+
+        static SBE_CONSTEXPR std::size_t quoteNotionalLimitEncodingLength() SBE_NOEXCEPT
+        {
+            return 8;
+        }
+
+        SBE_NODISCARD std::int64_t quoteNotionalLimit() const SBE_NOEXCEPT
+        {
+            if (m_actingVersion < 6)
+            {
+                return INT64_MIN;
+            }
+
+            std::int64_t val;
+            std::memcpy(&val, m_buffer + m_offset + 127, sizeof(std::int64_t));
+            return SBE_LITTLE_ENDIAN_ENCODE_64(val);
+        }
+
+        RelatedOrders &quoteNotionalLimit(const std::int64_t value) SBE_NOEXCEPT
+        {
+            std::int64_t val = SBE_LITTLE_ENDIAN_ENCODE_64(value);
+            std::memcpy(m_buffer + m_offset + 127, &val, sizeof(std::int64_t));
+            return *this;
+        }
+
         SBE_NODISCARD static const char *symbolMetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT
         {
             switch (metaAttribute)
@@ -5865,6 +6001,10 @@ public:
             builder << ", ";
             builder << R"("peggedPrice": )";
             builder << +writer.peggedPrice();
+
+            builder << ", ";
+            builder << R"("quoteNotionalLimit": )";
+            builder << +writer.quoteNotionalLimit();
 
             builder << ", ";
             builder << R"("symbol": )";
@@ -6614,6 +6754,10 @@ friend std::basic_ostream<CharT, Traits> & operator << (
     builder << ", ";
     builder << R"("peggedPrice": )";
     builder << +writer.peggedPrice();
+
+    builder << ", ";
+    builder << R"("quoteNotionalLimit": )";
+    builder << +writer.quoteNotionalLimit();
 
     builder << ", ";
     {

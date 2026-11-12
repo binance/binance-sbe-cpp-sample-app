@@ -38,6 +38,8 @@ public:
         UnfilledFokOrderExpired = static_cast<std::uint8_t>(6),
         InsufficientLiquidity = static_cast<std::uint8_t>(7),
         ExecutionRulePriceRangeExceeded = static_cast<std::uint8_t>(8),
+        Exhausted = static_cast<std::uint8_t>(9),
+        InsufficientQuoteNotionalLimit = static_cast<std::uint8_t>(10),
         NonRepresentable = static_cast<std::uint8_t>(254),
         NULL_VALUE = static_cast<std::uint8_t>(255)
     };
@@ -54,6 +56,8 @@ public:
             case static_cast<std::uint8_t>(6): return UnfilledFokOrderExpired;
             case static_cast<std::uint8_t>(7): return InsufficientLiquidity;
             case static_cast<std::uint8_t>(8): return ExecutionRulePriceRangeExceeded;
+            case static_cast<std::uint8_t>(9): return Exhausted;
+            case static_cast<std::uint8_t>(10): return InsufficientQuoteNotionalLimit;
             case static_cast<std::uint8_t>(254): return NonRepresentable;
             case static_cast<std::uint8_t>(255): return NULL_VALUE;
         }
@@ -73,6 +77,8 @@ public:
             case UnfilledFokOrderExpired: return "UnfilledFokOrderExpired";
             case InsufficientLiquidity: return "InsufficientLiquidity";
             case ExecutionRulePriceRangeExceeded: return "ExecutionRulePriceRangeExceeded";
+            case Exhausted: return "Exhausted";
+            case InsufficientQuoteNotionalLimit: return "InsufficientQuoteNotionalLimit";
             case NonRepresentable: return "NonRepresentable";
             case NULL_VALUE: return "NULL_VALUE";
         }
